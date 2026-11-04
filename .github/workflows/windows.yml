@@ -1,0 +1,27 @@
+name: Windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run electron:build
+      - uses: actions/upload-artifact@v6
+        with:
+          name: windows
+          path: release/*.exe
+          if-no-files-found: error

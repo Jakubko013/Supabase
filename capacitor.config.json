@@ -1,0 +1,10 @@
+{
+  "appId": "cz.volejbal.statistika",
+  "appName": "Volejbal Statistika",
+  "webDir": "dist",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}
