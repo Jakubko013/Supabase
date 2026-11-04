@@ -1,0 +1,2 @@
+# Proxy na cvf.cz (prohlížeč nesmí volat cvf.cz napřímo kvůli CORS). Funguje i při nahrání přes Netlify Drop.
+/cvf/*  https://www.cvf.cz/:splat  200!

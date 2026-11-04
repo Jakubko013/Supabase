@@ -1,0 +1,49 @@
+name: iOS
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths:
+      - 'ios/**'
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'capacitor.config.json'
+      - '.github/workflows/ios.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    # Xcode je jen na macOS – GitHub ho má na svých Mac strojích předinstalovaný.
+    runs-on: macos-latest
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build:native
+      - run: npx cap sync ios
+
+      - name: Build pro iOS simulátor (bez podpisu, ověří Xcode projekt)
+        run: >
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug
+          -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+
+      - name: Zabalit aplikaci pro simulátor
+        run: cd build/Build/Products/Debug-iphonesimulator && zip -qr "$GITHUB_WORKSPACE/VolejbalStatistika-simulator.zip" App.app
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: ios-simulator
+          path: VolejbalStatistika-simulator.zip
+          if-no-files-found: error

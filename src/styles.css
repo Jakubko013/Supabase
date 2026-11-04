@@ -1,0 +1,957 @@
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface-2: #e2e8f0;
+  --text: #0f172a;
+  --muted: #475569;
+  --border: #cbd5e1;
+  --primary: #1d4ed8;
+  --primary-text: #ffffff;
+  --good: #15803d;
+  --good-bg: #dcfce7;
+  --bad: #b91c1c;
+  --bad-bg: #fee2e2;
+  --neutral-bg: #e0e7ff;
+  --divider: #94a3b8;
+  --us-bg: #dbeafe;
+  --them: #c2410c;
+  --them-bg: #ffedd5;
+  --focus: #f59e0b;
+  --warn: #b45309;
+  --radius: 10px;
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface-2: #334155;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --border: #475569;
+    --primary: #3b82f6;
+    --good: #4ade80;
+    --good-bg: #14532d;
+    --bad: #f87171;
+    --bad-bg: #7f1d1d;
+    --neutral-bg: #312e81;
+    --divider: #64748b;
+    --warn: #fbbf24;
+    --us-bg: #1e3a8a;
+    --them: #fb923c;
+    --them-bg: #431407;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-2: #334155;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: #475569;
+  --primary: #3b82f6;
+  --good: #4ade80;
+  --good-bg: #14532d;
+  --bad: #f87171;
+  --bad-bg: #7f1d1d;
+  --neutral-bg: #312e81;
+  --divider: #64748b;
+  --warn: #fbbf24;
+  --us-bg: #1e3a8a;
+  --them: #fb923c;
+  --them-bg: #431407;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2 {
+  margin: 0;
+  line-height: 1.2;
+}
+h1 {
+  font-size: 1.5rem;
+}
+h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 96px max(16px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.page-wide {
+  max-width: 1400px;
+}
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.muted {
+  color: var(--muted);
+}
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 48px 16px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Tlačítka – min. 44px kvůli dotykovému ovládání */
+.btn {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.btn:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-text);
+}
+.btn-good {
+  background: var(--good-bg);
+  border-color: var(--good);
+}
+.btn-bad {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+}
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.btn-lg {
+  min-height: 56px;
+  font-size: 1.1rem;
+  padding: 12px 24px;
+}
+.btn-sm {
+  min-height: 40px;
+  padding: 6px 12px;
+}
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.actions,
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.banner {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  border: 1px solid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+.banner-ok {
+  background: var(--good-bg);
+  border-color: var(--good);
+}
+.banner-bad {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+}
+
+/* Formuláře */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+.form > * {
+  max-width: 100%;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+.field > span {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+input,
+select,
+textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-height: 44px;
+  width: 100%;
+}
+input[type='checkbox'] {
+  width: 24px;
+  height: 24px;
+  min-height: 0;
+  accent-color: var(--primary);
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+details {
+  width: 100%;
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+}
+/* Soupiska jako dlaždice */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+.tile {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  opacity: 0.55;
+}
+.tile.on {
+  opacity: 1;
+  border-color: var(--primary);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+.tile.no-num .tile-num {
+  color: var(--warn);
+}
+.tile-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 6px 4px 6px 12px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tile-num {
+  font-size: 1.35rem;
+  font-weight: 800;
+  min-width: 2ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.tile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.tile-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tile-pos {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.tile-edit {
+  min-width: 44px;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+.tile-edit-open {
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  opacity: 1;
+  border-color: var(--focus);
+  grid-column: span 2;
+}
+.tile-form {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px;
+}
+.tile-form .pos-select {
+  grid-column: 1 / -1;
+}
+.hint-warn {
+  margin: 0;
+  color: var(--warn);
+  font-weight: 600;
+}
+.num-input {
+  width: 4.5ch;
+  min-width: 56px;
+  text-align: center;
+}
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 0 max(12px, env(safe-area-inset-bottom));
+  background: var(--bg);
+}
+
+/* Seznam zápasů */
+.match-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.match-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.match-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Záznam zápasu */
+/* Skóre zůstává vidět i při posouvání tabulky */
+.rec-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin: -16px -16px 0;
+  padding: max(6px, env(safe-area-inset-top)) 16px 6px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.scoreboard {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto 1fr;
+  align-items: center;
+  gap: 4px 16px;
+  text-align: center;
+}
+.sb-team {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sb-team:first-child {
+  text-align: right;
+}
+.sb-team:nth-child(5) {
+  text-align: left;
+}
+.sb-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sb-num {
+  display: inline-block;
+  animation: score-pop 0.5s ease-out;
+}
+@keyframes score-pop {
+  from {
+    transform: scale(1.35);
+    color: var(--primary);
+  }
+}
+.serve {
+  font-size: 0.95rem;
+  margin: 0 4px;
+}
+.menu {
+  position: relative;
+}
+.menu > summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.2rem;
+}
+.menu > summary::-webkit-details-marker {
+  display: none;
+}
+.menu-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 220px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+.history-box summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.history-box .history {
+  margin-top: 8px;
+}
+.sub-icon {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.sb-score {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.sb-sets {
+  color: var(--muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+.sb-plus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  height: 44px;
+  padding: 0 8px;
+  border: 1px solid;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.sb-plus small {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.sb-plus.tone-good {
+  background: var(--good-bg);
+  border-color: var(--good);
+}
+.sb-plus.tone-bad {
+  background: var(--bad-bg);
+  border-color: var(--bad);
+}
+.page-rec {
+  gap: 10px;
+}
+.rec-header .actions {
+  flex-wrap: nowrap;
+}
+.rec-header .btn {
+  white-space: nowrap;
+}
+
+.grid-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  -webkit-overflow-scrolling: touch;
+}
+.rec-grid,
+.stats-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+}
+.rec-grid th,
+.rec-grid td {
+  padding: 1px 3px;
+  border-bottom: 1px solid var(--surface-2);
+}
+.rec-grid thead th {
+  font-size: 0.72rem;
+  color: var(--muted);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+}
+/* Svislé dělicí čáry mezi skupinami sloupců (Podání, Přihrávka, Útok…) */
+.group-head,
+.group-start {
+  border-left: 2px solid var(--divider);
+}
+.rec-grid td.group-start {
+  padding-left: 5px;
+}
+.group-head {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--surface);
+  text-align: left;
+}
+thead .sticky-col {
+  z-index: 2;
+}
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 150px;
+  max-width: 240px;
+  height: 36px;
+  padding: 0 8px 0 4px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.player-cell[aria-pressed='true'] {
+  border-color: var(--focus);
+  background: var(--surface-2);
+}
+.swap {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+.banner-sub {
+  background: var(--surface);
+  border-color: var(--focus);
+}
+/* Řádek s názvem týmu a odlišení soupeře */
+.team-row th,
+.team-row td {
+  background: var(--us-bg);
+  color: var(--primary);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+}
+.team-them .team-row th,
+.team-them .team-row td {
+  background: var(--them-bg);
+  color: var(--them);
+}
+.team-them .pnum,
+.hist-them span {
+  color: var(--them);
+}
+.pos {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.sub-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+.chip-blocked,
+.player-cell.blocked {
+  opacity: 0.4;
+}
+.bench-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin-bottom: 8px;
+}
+.bench .bench-head h2 {
+  margin: 0;
+}
+.pos-select {
+  min-width: 8.5rem;
+}
+@media (max-width: 480px) {
+  .tile-edit-open {
+    grid-column: auto;
+  }
+}
+.benches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+.add-players {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.add-players input {
+  width: 15rem;
+  max-width: 60vw;
+  min-height: 40px;
+}
+.opp-setup p {
+  margin: 0 0 8px;
+}
+.bench h2 {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.bench-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pnum {
+  font-size: 1.1rem;
+  font-weight: 800;
+  min-width: 2ch;
+  text-align: right;
+}
+.pname {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--primary);
+  color: var(--primary-text);
+}
+.cell {
+  width: 100%;
+  min-width: 56px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  /* Barva akce jen jako proužek nahoře – tabulka je klidnější a čísla čitelnější. */
+  box-shadow: inset 0 3px 0 var(--tone, var(--border));
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.1;
+  touch-action: manipulation;
+  user-select: none;
+  transition: transform 0.06s;
+}
+.cell:active {
+  transform: scale(0.94);
+}
+.cnt {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+.tone-good.cell {
+  --tone: var(--good);
+}
+.tone-bad.cell {
+  --tone: var(--bad);
+}
+.tone-neutral.cell {
+  --tone: var(--primary);
+}
+.tone-good.cell:not(.zero) .cnt {
+  color: var(--good);
+}
+.tone-bad.cell:not(.zero) .cnt {
+  color: var(--bad);
+}
+/* Nuly nevýrazně – na první pohled je vidět, kdo co udělal */
+.cell.zero .cnt {
+  opacity: 0.22;
+  font-weight: 600;
+}
+.cell:active {
+  background: var(--surface-2);
+}
+.cell-off {
+  background: repeating-linear-gradient(45deg, transparent 0 6px, var(--surface-2) 6px 8px);
+}
+
+.history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.history li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--surface-2);
+  padding: 2px 0;
+}
+.toast {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(520px, calc(100% - 32px));
+  padding: 8px 8px 8px 16px;
+  border-radius: 12px;
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+.toast .btn {
+  background: var(--bg);
+  color: var(--text);
+  border-color: transparent;
+  flex: none;
+}
+
+/* Statistika */
+.stats-title p {
+  margin: 4px 0 0;
+}
+.stats-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.th-sort {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 4px 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.th-sort:hover {
+  color: var(--primary);
+}
+.stats-table tbody tr:nth-child(n) td.best {
+  color: var(--good);
+  font-weight: 800;
+  background: var(--good-bg);
+}
+.stats-team {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.stats-team-name {
+  margin: 0;
+  color: var(--primary);
+}
+.team-them .stats-team-name {
+  color: var(--them);
+}
+.stats-table th,
+.stats-table td {
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--surface-2);
+  white-space: nowrap;
+}
+.stats-table thead th {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.stats-table tbody tr:nth-child(odd) td,
+.stats-table tbody tr:nth-child(odd) th {
+  background: var(--bg);
+}
+.stats-table tbody th {
+  font-weight: 600;
+}
+.stats-table tfoot td,
+.stats-table tfoot th {
+  font-weight: 800;
+  border-top: 2px solid var(--border);
+}
+.num {
+  font-weight: 700;
+}
+
+/* iPad na výšku: užší sloupec jmen a buňky, aby se tabulka vešla bez posouvání */
+@media (max-width: 900px) {
+  .player-cell {
+    min-width: 112px;
+    max-width: 170px;
+  }
+  .cell {
+    min-width: 48px;
+  }
+  .rec-grid th,
+  .rec-grid td {
+    padding: 1px 2px;
+  }
+}
+
+@media (max-width: 700px) {
+  .rec-header {
+    grid-template-columns: 1fr auto;
+  }
+  .scoreboard {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+@media print {
+  .no-print,
+  .banner {
+    display: none !important;
+  }
+  :root {
+    --bg: #fff;
+    --surface: #fff;
+    --text: #000;
+  }
+  .grid-wrap {
+    overflow: visible;
+    border: 0;
+  }
+  .page {
+    padding: 0;
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-num {
+    animation: none;
+  }
+}
+
+/* Tlačítko pro výběr souboru (input je skrytý uvnitř labelu) */
+label.btn {
+  display: inline-flex;
+  align-items: center;
+}
+label.btn:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.account-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.35rem 1rem;
+  font-size: 0.85rem;
+}
+.auth-page {
+  max-width: 28rem;
+}

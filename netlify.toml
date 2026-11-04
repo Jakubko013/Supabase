@@ -1,0 +1,6 @@
+# Web verze (PWA). Proxy /cvf/* na cvf.cz je v public/_redirects.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Odkazy v e-mailech (pozvánka, reset hesla) vedou na /app/ – bezpečnostní hlavičky jsou v public/_headers.
