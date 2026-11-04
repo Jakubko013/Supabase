@@ -102,7 +102,7 @@ export function createSync(client: SupabaseClient, userId: string, deps: SyncDep
       for (let i = 0; i < ids.length; i += BATCH) {
         const rows = ids.slice(i, i + BATCH).flatMap((id) => (byId.has(id) ? [{ id, user_id: userId, data: byId.get(id) }] : []));
         if (rows.length) {
-          const { error } = await client.from('matches').upsert(rows, { onConflict: 'id' });
+          const { error } = await client.from('matches').upsert(rows, { onConflict: 'user_id,id' });
           if (error) throw error;
         }
       }
