@@ -1042,6 +1042,7 @@ label.btn:focus-within {
 }
 .auth input:focus { outline: none; border-color: var(--a-ball); box-shadow: 0 0 0 4px rgb(255 210 63 / 0.2); }
 .auth .muted { color: #8d9bc4; }
+.auth .muted a { color: var(--a-ball); font-weight: 650; }
 .auth :focus-visible { outline-color: var(--a-ball); }
 .auth .actions { gap: 1rem 1.5rem; margin-top: 0.5rem; }
 .auth .btn-primary {

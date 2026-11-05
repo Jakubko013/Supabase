@@ -99,7 +99,9 @@ export function Login({ notice }: { notice?: string }) {
             {mode === 'login' ? 'Zapomenuté heslo' : 'Zpět'}
           </button>
         </div>
-        <p className="muted">Přístup je jen na pozvánku. Pozvánku vám pošle správce aplikace.</p>
+        <p className="muted">
+          Nemáte účet? <a href="/#pozvanka">Požádejte o pozvánku</a>
+        </p>
       </form>
     </Shell>
   );
