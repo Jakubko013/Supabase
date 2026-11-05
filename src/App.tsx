@@ -146,9 +146,14 @@ function Main({ user }: { user: User | null }) {
   return (
     <>
       {user && (
-        <div className="account-bar muted">
-          <span>{user.email}</span>
-          <span role="status">{STATUS_TEXT[status]}</span>
+        <div className="account-bar">
+          <a className="app-logo" href="#/" aria-label="VolleyStat – moje zápasy">
+            Volley<b>Stat</b>
+          </a>
+          <span className={`sync-pill sync-${status}`} role="status">
+            {STATUS_TEXT[status]}
+          </span>
+          <span className="account-email">{user.email}</span>
           <button className="btn btn-ghost btn-sm" onClick={() => void logout()}>
             Odhlásit
           </button>

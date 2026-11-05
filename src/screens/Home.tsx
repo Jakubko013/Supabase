@@ -19,29 +19,51 @@ const exportable = import.meta.env.MODE !== 'demo';
 
 export function Home({ matches, onDelete, onImport }: Props) {
   return (
-    <main className="page">
-      <header className="page-header">
-        <h1>Volejbal Statistika</h1>
-        <button className="btn btn-primary btn-lg" onClick={() => navigate('new')}>
+    <main className="page home">
+      <header className="home-head">
+        <div>
+          <p className="home-kicker">Přehled</p>
+          <h1>Moje zápasy</h1>
+        </div>
+        <button className="btn btn-primary btn-lg btn-slanted" onClick={() => navigate('new')}>
           + Nový zápas
         </button>
       </header>
 
       {matches.length === 0 ? (
-        <p className="empty">Zatím žádné zápasy. Začněte tlačítkem „Nový zápas“.</p>
+        <div className="home-empty">
+          <svg viewBox="0 0 300 180" aria-hidden="true">
+            <rect x="10" y="10" width="280" height="160" className="ce-floor" />
+            <line x1="150" y1="0" x2="150" y2="180" className="ce-net" />
+            <line x1="100" y1="10" x2="100" y2="170" />
+            <line x1="200" y1="10" x2="200" y2="170" />
+            <circle cx="232" cy="62" r="10" className="ce-ball" />
+          </svg>
+          <h2>Hřiště je připravené</h2>
+          <p>Založte první zápas, načtěte soupisku a zapisujte jedním klepnutím.</p>
+          <button className="btn btn-primary btn-lg btn-slanted" onClick={() => navigate('new')}>
+            + Nový zápas
+          </button>
+        </div>
       ) : (
         <ul className="match-list">
           {matches.map((m) => {
             const won = setsWon(m);
             return (
               <li key={m.id} className="card match-item">
-                <div>
-                  <div className="match-title">
-                    {m.team} <span className="muted">vs</span> {m.opponent}
+                <div className="match-main">
+                  <div className="match-meta">
+                    <span className={`match-status ${m.finished ? 'is-done' : 'is-live'}`}>{m.finished ? 'Ukončen' : 'Probíhá'}</span>
+                    <span>{new Date(m.date).toLocaleDateString('cs-CZ')}</span>
                   </div>
-                  <div className="muted">
-                    {new Date(m.date).toLocaleDateString('cs-CZ')} · sety {won.us}:{won.them} ·{' '}
-                    {m.finished ? 'ukončen' : 'probíhá'}
+                  <div className="match-board">
+                    <span className="match-team">{m.team}</span>
+                    <span className="match-sets" aria-label={`sety ${won.us}:${won.them}`}>
+                      <b>{won.us}</b>
+                      <i>:</i>
+                      <b>{won.them}</b>
+                    </span>
+                    <span className="match-team match-opp">{m.opponent}</span>
                   </div>
                 </div>
                 <div className="actions">
@@ -107,8 +129,10 @@ function BackupCard({ matches, onImport }: { matches: Match[]; onImport: (matche
     <section className="card form" aria-labelledby="backup-title">
       <h2 id="backup-title">Záloha dat</h2>
       <p className="muted">
-        Zápasy jsou uložené jen v tomto zařízení. Po zápase si uložte zálohu, ať o data nepřijdete při ztrátě zařízení nebo smazání dat
-        prohlížeče. Úložiště je zaplněné z {pct} %.
+        {isNative
+          ? 'Zápasy jsou uložené jen v tomto zařízení. Po zápase si uložte zálohu, ať o data nepřijdete při ztrátě zařízení.'
+          : 'Zápasy se ukládají do vašeho účtu. Záloha do souboru se hodí pro archiv nebo přenos mezi účty.'}{' '}
+        Úložiště v zařízení je zaplněné z {pct} %.
       </p>
       {pct >= 70 && (
         <p className="banner banner-bad" role="alert">
