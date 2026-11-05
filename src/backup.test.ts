@@ -15,6 +15,8 @@ describe('záloha', () => {
     expect(() => parseBackup('nic')).toThrow(/nejde přečíst/);
     expect(() => parseBackup('{"app":"jina"}')).toThrow(/není záloha/);
     expect(() => parseBackup('{"app":"volejbal-statistika","matches":[{"id":1}]}')).toThrow(/poškozená/);
+    const long = { ...createDemoMatch(), id: 'x'.repeat(65) };
+    expect(() => parseBackup(createBackup([long], []))).toThrow(/poškozená/);
   });
 
   it('nepřepíše zápasy, které už v zařízení jsou', () => {
