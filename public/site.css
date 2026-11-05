@@ -35,6 +35,7 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 400 1.0625rem/1.6 var(--body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 main { overflow-x: clip; }
+[id] { scroll-margin-top: 72px; }
 h1, h2, h3 { margin: 0; }
 p { margin: 0; }
 a { color: inherit; }
@@ -198,10 +199,30 @@ a { color: inherit; }
 
 /* ---------- Závěr ---------- */
 .final { position: relative; padding: clamp(5rem, 12vw, 9rem) clamp(1rem, 4vw, 2.5rem); text-align: center; background: var(--navy); color: #fff; overflow: hidden; }
-.final::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; border-top: 8px dotted rgb(244 239 228 / 0.12); }
+.final { isolation: isolate; }
+.final h2::before { content: ''; position: absolute; left: -100vw; right: -100vw; top: 52%; z-index: -1; border-top: 8px dotted rgb(244 239 228 / 0.12); }
 .final > * { position: relative; }
 .final-pre { font: 1.1rem/1 var(--display); text-transform: uppercase; letter-spacing: 0.18em; color: #ff6b4a; }
-.final h2 { margin: 1.75rem 0 2.75rem; font: 400 clamp(3.5rem, 11vw, 8rem)/1 var(--display); text-transform: uppercase; }
+.final h2 { margin: 1.75rem 0 2.25rem; font: 400 clamp(3.5rem, 11vw, 8rem)/1 var(--display); text-transform: uppercase; }
+
+/* Formulář pozvánky */
+.invite { max-width: 46rem; margin: 0 auto; text-align: left; }
+.invite-lead { margin-bottom: 1.75rem; text-align: center; font-size: 1.15rem; color: #c7d0ea; }
+.invite-grid { display: grid; gap: 1rem 1.25rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+.in-wide { grid-column: 1 / -1; }
+.in-field { display: grid; gap: 0.4rem; }
+.in-field > span { font-weight: 650; color: #b9c4e4; font-size: 0.95rem; }
+.invite input, .invite select, .invite textarea { width: 100%; min-height: 54px; padding: 12px 14px; border: 2px solid #22346a; border-radius: 12px; background: #0d2152; color: #fff; font: inherit; font-size: 1.05rem; }
+.invite textarea { resize: vertical; min-height: 6rem; }
+.invite select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #ffd23f 50%), linear-gradient(135deg, #ffd23f 50%, transparent 50%); background-position: calc(100% - 22px) 52%, calc(100% - 16px) 52%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 2.5rem; }
+.invite ::placeholder { color: #6f7ca6; }
+.invite input:focus, .invite select:focus, .invite textarea:focus { outline: none; border-color: var(--ball); box-shadow: 0 0 0 4px rgb(255 210 63 / 0.2); }
+.invite-note { margin: 1rem 0 2rem; font-size: 0.9rem; color: #8d9bc4; }
+.invite .btn-slant { border: 0; cursor: pointer; }
+.invite-login { margin-top: 1.75rem; color: #b9c4e4; }
+.invite-login a { color: var(--ball); font-weight: 650; }
+.hp { position: absolute; left: -9999px; }
+.faq a { color: var(--navy); font-weight: 750; }
 
 .foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 1.5rem clamp(1rem, 4vw, 2.5rem); background: #050d22; color: #8d9bc4; font-size: 0.9rem; }
 
@@ -210,3 +231,8 @@ a { color: inherit; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .js .phase .vignette { opacity: 1; }
 }
+
+/* Stránka po odeslání žádosti */
+.thanks { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.thanks h1 { margin: 1.75rem 0 1.5rem; font: 400 clamp(3rem, 10vw, 6.5rem)/1.22 var(--display); text-transform: uppercase; }
+.thanks .invite-lead { max-width: 34rem; margin-bottom: 2.5rem; }

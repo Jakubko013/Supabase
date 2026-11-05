@@ -58,7 +58,7 @@
             ne do papíru.
           </p>
           <div class="hero-cta">
-            <a class="btn-slant" href="/app/"><span>Na podání</span></a>
+            <a class="btn-slant" href="#pozvanka"><span>Získat pozvánku</span></a>
             <a class="link-arrow" href="#vymena">Projít výměnu</a>
           </div>
         </div>
@@ -208,7 +208,7 @@
         <div class="faq">
           <details>
             <summary>Jak získám přístup?</summary>
-            <p>Přístup je na pozvánku. Přijde vám e-mail s odkazem, nastavíte si heslo a můžete zapisovat.</p>
+            <p>Vyplňte formulář <a href="#pozvanka">Získat pozvánku</a> dole na stránce. Po schválení vám přijde e-mail s odkazem, nastavíte si heslo a můžete zapisovat.</p>
           </details>
           <details>
             <summary>Zvládne to zapisovat i člověk, který nikdy statistiku nedělal?</summary>
@@ -222,10 +222,48 @@
       </section>
 
       <!-- CTA -->
-      <section class="final">
+      <section id="pozvanka" class="final">
         <p class="final-pre">Skóre 24 : 24. Mečbol.</p>
         <h2>Na podání<br />jste vy.</h2>
-        <a class="btn-slant big" href="/app/"><span>Přejít do aplikace</span></a>
+
+        <!-- Netlify Forms: žádosti se ukládají v Netlify (Forms → pozvanka), oznámení e-mailem se nastaví tamtéž. -->
+        <form class="invite" name="pozvanka" method="POST" action="/dekujeme.html" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="pozvanka" />
+          <p class="hp"><label>Nevyplňujte: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+          <p class="invite-lead">Přístup je zatím na pozvánku. Napište nám a pozvánku pošleme na váš e-mail.</p>
+          <div class="invite-grid">
+            <label class="in-field">
+              <span>Jméno a příjmení</span>
+              <input name="jmeno" required maxlength="100" autocomplete="name" />
+            </label>
+            <label class="in-field">
+              <span>E-mail</span>
+              <input name="email" type="email" required maxlength="254" autocomplete="email" />
+            </label>
+            <label class="in-field">
+              <span>Klub / tým</span>
+              <input name="klub" required maxlength="120" autocomplete="organization" />
+            </label>
+            <label class="in-field">
+              <span>Role</span>
+              <select name="role" required>
+                <option value="">Vyberte…</option>
+                <option>Trenér</option>
+                <option>Statistik / zapisovatel</option>
+                <option>Hráč</option>
+                <option>Rodič / fanoušek</option>
+                <option>Jiná</option>
+              </select>
+            </label>
+            <label class="in-field in-wide">
+              <span>Zpráva (nepovinné)</span>
+              <textarea name="zprava" rows="3" maxlength="1000" placeholder="Soutěž, kolik zápasů chcete zapisovat…"></textarea>
+            </label>
+          </div>
+          <p class="invite-note">Údaje použijeme jen k vyřízení pozvánky a k ničemu jinému je nepředáme.</p>
+          <button class="btn-slant big" type="submit"><span>Získat pozvánku</span></button>
+          <p class="invite-login">Už máte účet? <a href="/app/">Přihlásit se</a></p>
+        </form>
       </section>
     </main>
 
