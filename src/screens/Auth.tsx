@@ -5,15 +5,34 @@ import type { User } from '@supabase/supabase-js';
 
 function Shell({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <main className="page auth-page">
-      <header className="page-header">
+    <div className="auth">
+      <aside className="auth-side" aria-hidden="true">
+        <a className="auth-logo" href="/" tabIndex={-1}>
+          Volley<b>Stat</b>
+        </a>
+        <p className="auth-slogan">
+          <span>Každý</span>
+          <span className="auth-outline">balon</span>
+          <span>
+            se <em>počítá.</em>
+          </span>
+        </p>
+        <svg className="auth-court" viewBox="0 0 300 180">
+          <rect x="10" y="10" width="280" height="160" />
+          <line x1="150" y1="0" x2="150" y2="180" className="net" />
+          <line x1="100" y1="10" x2="100" y2="170" />
+          <line x1="200" y1="10" x2="200" y2="170" />
+          <circle cx="232" cy="62" r="9" className="ball" />
+        </svg>
+      </aside>
+      <main className="auth-main">
+        <a className="auth-back" href="/">
+          ← Zpět na web
+        </a>
         <h1>{title}</h1>
-      </header>
-      {children}
-      <p className="muted">
-        <a href="/">← Zpět na web</a>
-      </p>
-    </main>
+        {children}
+      </main>
+    </div>
   );
 }
 

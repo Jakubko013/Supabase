@@ -952,6 +952,119 @@ label.btn:focus-within {
   padding: 0.35rem 1rem;
   font-size: 0.85rem;
 }
-.auth-page {
-  max-width: 28rem;
+/* Přihlášení – vizuálně navazuje na úvodní web (public/site.css). */
+@font-face { font-family: 'Anton'; font-display: swap; src: url(/fonts/anton-latin-400-normal.woff2) format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+@font-face { font-family: 'Anton'; font-display: swap; src: url(/fonts/anton-latin-ext-400-normal.woff2) format('woff2'); unicode-range: U+0100-02FF; }
+.auth {
+  --a-navy: #0a1a3f;
+  --a-court: #f0601e;
+  --a-ball: #ffd23f;
+  --a-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
+  min-height: 100dvh;
+  display: grid;
+  background: var(--a-navy);
+  color: #fff;
 }
+@media (min-width: 56rem) {
+  .auth { grid-template-columns: 1.1fr 1fr; }
+}
+.auth-side {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: max(20px, env(safe-area-inset-top)) clamp(1rem, 4vw, 3rem) 1.5rem;
+  background:
+    radial-gradient(700px 400px at 90% 0%, rgb(240 96 30 / 0.3), transparent 60%),
+    repeating-linear-gradient(115deg, transparent 0 38px, rgb(255 255 255 / 0.03) 38px 40px),
+    var(--a-navy);
+}
+.auth-logo {
+  font: 1.4rem/1 var(--a-display);
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+}
+.auth-logo b { font-weight: 400; color: var(--a-ball); }
+.auth-slogan {
+  margin: 0;
+  font: clamp(2.6rem, 9vw, 6.5rem)/1.2 var(--a-display);
+  text-transform: uppercase;
+}
+.auth-slogan span { display: block; }
+.auth-slogan em { font-style: normal; color: var(--a-ball); }
+.auth-outline { color: transparent; -webkit-text-stroke: 2px #fff; }
+.auth-court { width: min(100%, 22rem); transform: rotate(-6deg); }
+.auth-court rect { fill: var(--a-court); stroke: #fff; stroke-width: 4; }
+.auth-court line { stroke: #fff; stroke-width: 3; }
+.auth-court .net { stroke: #f4efe4; stroke-width: 6; stroke-dasharray: 2 4; }
+.auth-court .ball { fill: var(--a-ball); stroke: var(--a-navy); stroke-width: 3; }
+@media (max-width: 55.99rem) {
+  .auth-slogan { font-size: clamp(2rem, 10vw, 3rem); }
+  .auth-slogan span { display: inline; }
+  .auth-slogan span + span::before { content: ' '; }
+  .auth-court { display: none; }
+  .auth-side { gap: 1.25rem; padding-bottom: 0.25rem; }
+  .auth-main { justify-content: flex-start; padding-top: 1.5rem; }
+}
+
+.auth-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 2rem clamp(1rem, 4vw, 2.5rem) max(2rem, env(safe-area-inset-bottom));
+}
+.auth-main h1 {
+  margin: 0;
+  font: 400 clamp(2.4rem, 6vw, 3.4rem)/1 var(--a-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.auth-back { align-self: flex-start; color: #b9c4e4; font-weight: 600; text-decoration: none; }
+.auth-back:hover { color: var(--a-ball); }
+.auth .card { padding: 0; border: 0; background: transparent; }
+.auth .form { gap: 1rem; align-items: stretch; }
+.auth .field > span { color: #b9c4e4; font-weight: 600; }
+.auth input {
+  min-height: 54px;
+  padding: 12px 14px;
+  border: 2px solid #22346a;
+  border-radius: 12px;
+  background: #0d2152;
+  color: #fff;
+  font-size: 1.05rem;
+}
+.auth input:focus { outline: none; border-color: var(--a-ball); box-shadow: 0 0 0 4px rgb(255 210 63 / 0.2); }
+.auth .muted { color: #8d9bc4; }
+.auth :focus-visible { outline-color: var(--a-ball); }
+.auth .actions { gap: 1rem 1.5rem; margin-top: 0.5rem; }
+.auth .btn-primary {
+  min-height: 56px;
+  padding: 0 2rem;
+  border: 0;
+  border-radius: 0;
+  background: var(--a-ball);
+  color: var(--a-navy);
+  font: 1.3rem/1 var(--a-display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+  box-shadow: none;
+}
+.auth .btn-primary:hover:not(:disabled) { filter: none; background: #ffdd66; }
+.auth .btn-ghost,
+.auth .btn:not(.btn-primary) {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.auth .banner { color: var(--text); }
