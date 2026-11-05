@@ -16,9 +16,12 @@ export function createBackup(matches: Match[], rosters: SavedRoster[]): string {
   return JSON.stringify(backup);
 }
 
+/** Stejné omezení jako v databázi (matches.id 1–64 znaků) – delší id by trvale blokovalo synchronizaci. */
+export const isValidMatchId = (id: unknown): id is string => typeof id === 'string' && id.length >= 1 && id.length <= 64;
+
 const isMatch = (m: unknown): m is Match => {
   const x = m as Match;
-  return !!x && typeof x.id === 'string' && typeof x.team === 'string' && Array.isArray(x.players) && Array.isArray(x.events);
+  return !!x && isValidMatchId(x.id) && typeof x.team === 'string' && Array.isArray(x.players) && Array.isArray(x.events);
 };
 
 /** Načte zálohu a ověří, že jde opravdu o zálohu této aplikace (jinak vyhodí srozumitelnou chybu). */

@@ -12,7 +12,7 @@ import { createDemoMatch } from './demo';
 import { useAuth } from './auth';
 import { supabase } from './supabase';
 import { createSync, diffMatches, type Sync, type SyncStatus } from './sync';
-import { mergeMatches } from './backup';
+import { isValidMatchId, mergeMatches } from './backup';
 
 export type MatchUpdater = (id: string, update: (m: Match) => Match) => void;
 
@@ -174,7 +174,7 @@ function Main({ user }: { user: User | null }) {
 function LegacyImport({ onImport }: { onImport: (matches: Match[], rosters: SavedRoster[]) => void }) {
   const [legacy, setLegacy] = useState<Match[]>(() => {
     const raw = read<unknown>(LEGACY_MATCHES_KEY, []);
-    return Array.isArray(raw) ? (raw as Match[]).filter((m) => m && typeof m.id === 'string' && Array.isArray(m.players) && Array.isArray(m.events)) : [];
+    return Array.isArray(raw) ? (raw as Match[]).filter((m) => m && isValidMatchId(m.id) && Array.isArray(m.players) && Array.isArray(m.events)) : [];
   });
   const [hidden, setHidden] = useState(false);
   if (!legacy.length || hidden) return null;
