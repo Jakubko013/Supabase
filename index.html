@@ -227,9 +227,10 @@
         <h2>Na podání<br />jste vy.</h2>
 
         <!-- Netlify Forms: žádosti se ukládají v Netlify (Forms → pozvanka), oznámení e-mailem se nastaví tamtéž. -->
-        <form class="invite" name="pozvanka" method="POST" action="/dekujeme.html" data-netlify="true" netlify-honeypot="bot-field">
+        <form class="invite" name="pozvanka" method="POST" action="/dekujeme.html" data-netlify="true" netlify-honeypot="web">
           <input type="hidden" name="form-name" value="pozvanka" />
-          <p class="hp"><label>Nevyplňujte: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+          <!-- Past na roboty: lidé pole nevidí, roboti vyplňují „web“ rádi. Netlify takové žádosti zahodí. -->
+          <p class="hp" aria-hidden="true"><label>Web <input name="web" type="text" tabindex="-1" autocomplete="off" /></label></p>
           <p class="invite-lead">Přístup je zatím na pozvánku. Napište nám a pozvánku pošleme na váš e-mail.</p>
           <div class="invite-grid">
             <label class="in-field">
