@@ -75,9 +75,14 @@ export async function signUp(email: string, password: string): Promise<string | 
   if (!supabase) return 'Aplikace není nakonfigurovaná.';
   const { error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: `${window.location.origin}/app/` } });
   if (!error) return null;
-  if (error.status === 429) return 'Příliš mnoho pokusů. Zkuste to za chvíli.';
-  if (/weak|pwned|password/i.test(error.message)) return 'Heslo je příliš slabé. Zvolte jiné.';
-  return 'Účet se nepodařilo vytvořit. Zkuste to znovu.';
+  const msg = `${error.code ?? ''} ${error.message}`;
+  if (error.status === 429 || /rate.?limit/i.test(msg)) return 'Příliš mnoho pokusů nebo e-mailů. Zkuste to za chvíli.';
+  if (/signup.?disabled|signups not allowed/i.test(msg)) return 'Registrace je momentálně vypnutá. Napište nám na info@volleystat.cz.';
+  if (/sending.*email|smtp|confirmation email/i.test(msg)) return 'Nepodařilo se odeslat potvrzovací e-mail. Zkuste to prosím později.';
+  if (/email.*invalid|invalid.*email/i.test(msg)) return 'Zadejte platný e-mail.';
+  if (/weak|pwned|password/i.test(msg)) return 'Heslo je příliš slabé. Zvolte jiné.';
+  console.error('signUp', error);
+  return `Účet se nepodařilo vytvořit (${error.code ?? error.status ?? 'chyba'}). Zkuste to znovu.`;
 }
 
 export async function requestReset(email: string): Promise<void> {
