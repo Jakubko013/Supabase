@@ -17,14 +17,12 @@
 3. **Authentication → Sign In / Providers:** zapnout *Allow new users to sign up* (Confirm email nechat zapnuté).
 4. **Stripe** (nejdřív Sandbox / Test mode):
    - Product catalog → produkt „Klubová licence VolleyStat“, cena **4 000 CZK, Recurring, Yearly** → zkopírovat Price ID (`price_…`).
-   - Developers → Webhooks → endpoint `https://<projekt>.supabase.co/functions/v1/stripe-webhook`, události `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted` → Signing secret (`whsec_…`).
+   - Developers → Webhooks → endpoint `https://<projekt>.supabase.co/functions/v1/hyper-processor`, události `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted` → Signing secret (`whsec_…`).
    - Settings → Business details (IČO, adresa); Settings → Invoices → patička „Nejsem plátce DPH.“; Settings → Billing → Customer portal zapnout (zrušení předplatného, faktury).
 5. **Edge Functions → Secrets:** `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`, `SITE_URL=https://volleystat.cz/app/` (volitelně `ALLOWED_ORIGINS`).
-6. **Nasadit 2 funkce** z `functions/` (`supabase functions deploy`, nebo Dashboard → Edge Functions → Deploy new function → Via editor):
-   - `club-api` – nákup licence, správa plateb, pozvání člena (aplikace posílá `{ action }`),
-   - `stripe-webhook` – prodloužení licence po zaplacení.
-   U obou vypnout **„Verify JWT“**. Nasazené adresy (slug) v projektu: club-api = `hyper-processor`, stripe-webhook = `smart-service`
-   (aplikace volá `hyper-processor`, viz `src/club.ts`; webhook ve Stripe vede na `…/functions/v1/smart-service`).
+6. **Nasadit funkci** `functions/club-api` (`supabase functions deploy club-api`, nebo Dashboard → Edge Functions → Deploy new function → Via editor).
+   Obsluhuje aplikaci (`{ action: checkout | portal | invite }`) i webhook Stripe (pozná ho podle hlavičky `Stripe-Signature`).
+   Vypnout **„Verify JWT“**. V projektu má adresu `hyper-processor` – aplikace ji volá (viz `src/club.ts`) a **webhook ve Stripe vede na `…/functions/v1/hyper-processor`**.
 7. Test: registrace → 2 zápasy → Klub → Koupit licenci (testovací karta `4242 4242 4242 4242`) → licence aktivní → pozvat člena.
 
 Licenci ručně (např. pro sebe): `update clubs set license_until = now() + interval '1 year' where id = '<club_id>';`

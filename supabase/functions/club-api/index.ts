@@ -1,6 +1,8 @@
-// VolleyStat – klubové akce v jedné funkci: { action: 'checkout' | 'portal' | 'invite' }.
-// Volá jen přihlášený uživatel; přihlášení ověřuje funkce sama (Verify JWT na bráně vypnuté).
-// Tajné klíče: Supabase → Edge Functions → Secrets (STRIPE_SECRET_KEY, STRIPE_PRICE_ID, SITE_URL).
+// VolleyStat – celý server v jedné funkci:
+//  • aplikace (přihlášený správce klubu): { action: 'checkout' | 'portal' | 'invite' },
+//  • webhook Stripe (hlavička Stripe-Signature): po zaplacení prodlouží licenci klubu.
+// Přihlášení i podpis ověřuje funkce sama (Verify JWT na bráně vypnuté).
+// Tajné klíče: Supabase → Edge Functions → Secrets (STRIPE_SECRET_KEY, STRIPE_PRICE_ID, STRIPE_WEBHOOK_SECRET, SITE_URL).
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import Stripe from 'npm:stripe@18'; // API 2025-08-27.basil – vyžaduje ji Managed Payments
 
@@ -37,7 +39,70 @@ const cors = (req: Request) => {
   };
 };
 
+const idOf = (v: string | { id: string } | null | undefined) => (typeof v === 'string' ? v : v?.id ?? null);
+
+/** Webhook Stripe: pravost ověřuje podpis (STRIPE_WEBHOOK_SECRET), ne přihlášení. */
+async function handleWebhook(req: Request, signature: string): Promise<Response> {
+  const secret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
+  if (!secret) return new Response('Chybí secret STRIPE_WEBHOOK_SECRET.', { status: 500 });
+  let event: Stripe.Event;
+  try {
+    event = await stripe().webhooks.constructEventAsync(await req.text(), signature, secret, undefined, Stripe.createSubtleCryptoProvider());
+  } catch {
+    return new Response('Invalid signature', { status: 400 });
+  }
+  const admin = createClient(Deno.env.get('SUPABASE_URL')!, secretKey());
+  try {
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const s = event.data.object;
+        const clubId = s.client_reference_id ?? s.metadata?.club_id;
+        if (clubId) await admin.from('clubs').update({ stripe_customer_id: idOf(s.customer), stripe_subscription_id: idOf(s.subscription) }).eq('id', clubId);
+        break;
+      }
+      case 'invoice.paid': {
+        const inv = event.data.object;
+        // Klub podle zákazníka, jinak podle metadat předplatného (webhooky nemusí dorazit v pořadí).
+        let clubId: string | null = null;
+        const customer = idOf(inv.customer);
+        if (customer) {
+          const { data } = await admin.from('clubs').select('id').eq('stripe_customer_id', customer).maybeSingle();
+          clubId = data?.id ?? null;
+        }
+        clubId ??= inv.parent?.subscription_details?.metadata?.club_id ?? null;
+        const periodEnd = Math.max(0, ...inv.lines.data.map((l) => l.period?.end ?? 0));
+        if (!clubId || !periodEnd) {
+          console.error('invoice.paid bez klubu nebo období', inv.id);
+          break;
+        }
+        const { data: club } = await admin.from('clubs').select('license_until, stripe_customer_id').eq('id', clubId).single();
+        const until = new Date(periodEnd * 1000);
+        const current = club?.license_until ? new Date(club.license_until) : null;
+        await admin
+          .from('clubs')
+          .update({
+            license_until: (current && current > until ? current : until).toISOString(),
+            ...(club?.stripe_customer_id ? {} : { stripe_customer_id: customer }),
+          })
+          .eq('id', clubId);
+        break;
+      }
+      case 'customer.subscription.deleted': {
+        // Licence platí do konce zaplaceného období; jen zapomeneme zrušené předplatné.
+        await admin.from('clubs').update({ stripe_subscription_id: null }).eq('stripe_subscription_id', event.data.object.id);
+        break;
+      }
+    }
+    return new Response('ok');
+  } catch (e) {
+    console.error('webhook', event.type, e);
+    return new Response('Error', { status: 500 }); // Stripe to zkusí znovu
+  }
+}
+
 Deno.serve(async (req) => {
+  const signature = req.headers.get('Stripe-Signature');
+  if (signature && req.method === 'POST') return handleWebhook(req, signature);
   const json = (body: unknown, status = 200) =>
     new Response(JSON.stringify(body), { status, headers: { ...cors(req), 'Content-Type': 'application/json' } });
   if (req.method === 'OPTIONS') return new Response(null, { headers: cors(req) });

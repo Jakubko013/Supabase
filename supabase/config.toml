@@ -1,8 +1,5 @@
-# Nastavení serverových funkcí (Supabase CLI: `supabase functions deploy`).
-# Ověření JWT na bráně je vypnuté: club-api si přihlášení ověřuje sama (auth.getUser),
-# webhook ověřuje podpis Stripe. Funguje tak i s novými klíči Supabase (publishable / secret).
+# Nastavení serverové funkce (Supabase CLI: `supabase functions deploy`).
+# club-api obsluhuje aplikaci i webhook Stripe; přihlášení i podpis ověřuje sama,
+# proto je ověření JWT na bráně vypnuté (funguje i s novými klíči Supabase).
 [functions.club-api]
-verify_jwt = false
-
-[functions.stripe-webhook]
 verify_jwt = false
