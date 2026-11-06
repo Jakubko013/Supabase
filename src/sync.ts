@@ -2,7 +2,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Match } from './types';
 import { mergeRosters, normalizeMatch, read, write, loadRosters, type SavedRoster } from './storage';
 
-export type SyncStatus = 'idle' | 'syncing' | 'offline' | 'error';
+export type SyncStatus = 'idle' | 'syncing' | 'offline' | 'error' | 'locked';
+
+/** Databáze zápis odmítla kvůli licenci (zkušební verze vyčerpána / licence vypršela) – nemá smysl to rychle opakovat. */
+const isLicenseError = (e: unknown) => (e as { code?: string })?.code === '42501';
+const LOCKED_RETRY_MS = 5 * 60_000;
 
 /** Co ještě nebylo odesláno na server (přežije zavření aplikace i offline). */
 interface Outbox {
@@ -47,7 +51,7 @@ export interface SyncDeps {
   onStatus: (s: SyncStatus) => void;
 }
 
-export function createSync(client: SupabaseClient, userId: string, deps: SyncDeps) {
+export function createSync(client: SupabaseClient, userId: string, clubId: string, deps: SyncDeps) {
   const boxKey = `vs:u:${userId}:outbox`;
   const stored = read<Partial<Outbox>>(boxKey, {});
   const box: Outbox = { up: stored.up && typeof stored.up === 'object' ? stored.up : {}, del: Array.isArray(stored.del) ? stored.del : [], rosters: !!stored.rosters };
@@ -100,9 +104,9 @@ export function createSync(client: SupabaseClient, userId: string, deps: SyncDep
       const byId = new Map(deps.getMatches().map((m) => [m.id, m]));
       const ids = Object.keys(sent);
       for (let i = 0; i < ids.length; i += BATCH) {
-        const rows = ids.slice(i, i + BATCH).flatMap((id) => (byId.has(id) ? [{ id, user_id: userId, data: byId.get(id) }] : []));
+        const rows = ids.slice(i, i + BATCH).flatMap((id) => (byId.has(id) ? [{ club_id: clubId, id, data: byId.get(id) }] : []));
         if (rows.length) {
-          const { error } = await client.from('matches').upsert(rows, { onConflict: 'user_id,id' });
+          const { error } = await client.from('matches').upsert(rows, { onConflict: 'club_id,id' });
           if (error) throw error;
         }
       }
@@ -110,16 +114,16 @@ export function createSync(client: SupabaseClient, userId: string, deps: SyncDep
 
       if (box.del.length) {
         const del = [...box.del];
-        const { error } = await client.from('matches').delete().in('id', del).eq('user_id', userId);
+        const { error } = await client.from('matches').delete().in('id', del).eq('club_id', clubId);
         if (error) throw error;
         box.del = box.del.filter((d) => !del.includes(d));
       }
 
       if (box.rosters) {
         box.rosters = false;
-        const rows = loadRosters().map((r) => ({ user_id: userId, team: r.team, data: r }));
+        const rows = loadRosters().map((r) => ({ club_id: clubId, team: r.team, data: r }));
         if (rows.length) {
-          const { error } = await client.from('rosters').upsert(rows, { onConflict: 'user_id,team' });
+          const { error } = await client.from('rosters').upsert(rows, { onConflict: 'club_id,team' });
           if (error) {
             box.rosters = true;
             throw error;
@@ -129,10 +133,11 @@ export function createSync(client: SupabaseClient, userId: string, deps: SyncDep
       persist();
       deps.onStatus('idle');
       return true;
-    } catch {
+    } catch (e) {
       persist();
-      deps.onStatus(navigator.onLine ? 'error' : 'offline');
-      schedule(RETRY_MS);
+      const locked = isLicenseError(e);
+      deps.onStatus(locked ? 'locked' : navigator.onLine ? 'error' : 'offline');
+      schedule(locked ? LOCKED_RETRY_MS : RETRY_MS);
       return false;
     } finally {
       running = false;
@@ -150,12 +155,12 @@ export function createSync(client: SupabaseClient, userId: string, deps: SyncDep
     try {
       const remote: Match[] = [];
       for (let from = 0; ; from += PAGE) {
-        const { data, error } = await client.from('matches').select('data').order('created_at', { ascending: false }).range(from, from + PAGE - 1);
+        const { data, error } = await client.from('matches').select('data').eq('club_id', clubId).order('created_at', { ascending: false }).range(from, from + PAGE - 1);
         if (error) throw error;
         remote.push(...data.map((r) => r.data as Match).filter((m) => m && typeof m.id === 'string' && Array.isArray(m.events) && Array.isArray(m.players)).map(normalizeMatch));
         if (data.length < PAGE) break;
       }
-      const { data: rosterRows, error: rErr } = await client.from('rosters').select('data');
+      const { data: rosterRows, error: rErr } = await client.from('rosters').select('data').eq('club_id', clubId);
       if (rErr) throw rErr;
 
       if (disposed) return;

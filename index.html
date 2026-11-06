@@ -58,8 +58,8 @@
             ne do papíru.
           </p>
           <div class="hero-cta">
-            <a class="btn-slant" href="#pozvanka"><span>Získat pozvánku</span></a>
-            <a class="link-arrow" href="#vymena">Projít výměnu</a>
+            <a class="btn-slant" href="/app/?registrace"><span>Vyzkoušet zdarma</span></a>
+            <a class="link-arrow" href="#cenik">Ceník</a>
           </div>
         </div>
 
@@ -187,6 +187,37 @@
         </article>
       </section>
 
+      <!-- CENÍK -->
+      <section id="cenik" class="pricing">
+        <p class="kicker dark">Ceník</p>
+        <h2>Jedna licence.<br />Celý klub.</h2>
+        <div class="plans">
+          <article class="plan">
+            <h3>Zkušební verze</h3>
+            <p class="plan-price"><b>0 Kč</b></p>
+            <ul>
+              <li>2 zápasy zdarma</li>
+              <li>Všechny funkce aplikace</li>
+              <li>Bez platební karty</li>
+            </ul>
+            <a class="plan-link" href="/app/?registrace">Vyzkoušet zdarma</a>
+          </article>
+          <article class="plan plan-main">
+            <p class="plan-badge">Pro kluby</p>
+            <h3>Klubová licence</h3>
+            <p class="plan-price"><b>4 000 Kč</b> / sezóna</p>
+            <ul>
+              <li>Neomezený počet zápasů na 12 měsíců</li>
+              <li>Až 3 lidé z klubu sdílí zápasy</li>
+              <li>Synchronizace mezi zařízeními</li>
+              <li>Export do PDF a CSV, soupisky z cvf.cz</li>
+            </ul>
+            <a class="btn-slant" href="/app/?registrace"><span>Začít zdarma</span></a>
+            <p class="plan-note">Licenci koupíte v aplikaci kartou, Apple Pay nebo Google Pay. Obnovuje se automaticky, zrušit ji můžete kdykoli. Nejsme plátci DPH. <a href="/obchodni-podminky.html">Obchodní podmínky</a></p>
+          </article>
+        </div>
+      </section>
+
       <!-- TIME-OUT -->
       <section class="timeout" data-point>
         <h2><span>Time</span><span>-out</span></h2>
@@ -208,7 +239,7 @@
         <div class="faq">
           <details>
             <summary>Jak získám přístup?</summary>
-            <p>Vyplňte formulář <a href="#pozvanka">Získat pozvánku</a> dole na stránce. Po schválení vám přijde e-mail s odkazem, nastavíte si heslo a můžete zapisovat.</p>
+            <p>Zaregistrujte se a zapište 2 zápasy zdarma, bez platební karty. Pak správce koupí v aplikaci licenci pro klub a může přizvat další 2 lidi.</p>
           </details>
           <details>
             <summary>Zvládne to zapisovat i člověk, který nikdy statistiku nedělal?</summary>
@@ -231,7 +262,8 @@
           <input type="hidden" name="form-name" value="pozvanka" />
           <!-- Past na roboty: lidé pole nevidí, roboti vyplňují „web“ rádi. Netlify takové žádosti zahodí. -->
           <p class="hp" aria-hidden="true"><label>Web <input name="web" type="text" tabindex="-1" autocomplete="off" /></label></p>
-          <p class="invite-lead">Přístup je zatím na pozvánku. Napište nám a pozvánku pošleme na váš e-mail.</p>
+          <p class="invite-trial"><a class="btn-slant big" href="/app/?registrace"><span>Vyzkoušet zdarma</span></a></p>
+          <p class="invite-lead">Máte dotaz, chcete licenci na fakturu nebo pro víc lidí? Napište nám.</p>
           <div class="invite-grid">
             <label class="in-field">
               <span>Jméno a příjmení</span>
@@ -261,8 +293,8 @@
               <textarea name="zprava" rows="3" maxlength="1000" placeholder="Soutěž, kolik zápasů chcete zapisovat…"></textarea>
             </label>
           </div>
-          <p class="invite-note">Údaje použijeme jen k vyřízení pozvánky a k ničemu jinému je nepředáme.</p>
-          <button class="btn-slant big" type="submit"><span>Získat pozvánku</span></button>
+          <p class="invite-note">Údaje použijeme jen k vyřízení pozvánky a k ničemu jinému je nepředáme. Více v <a href="/soukromi.html">zásadách ochrany osobních údajů</a>.</p>
+          <button class="btn-slant" type="submit"><span>Odeslat dotaz</span></button>
           <p class="invite-login">Už máte účet? <a href="/app/">Přihlásit se</a></p>
         </form>
       </section>
@@ -270,7 +302,7 @@
 
     <footer class="foot">
       <span>© 2026 VolleyStat</span>
-      <a href="/app/">Přihlášení</a>
+      <span class="foot-links"><a href="/obchodni-podminky.html">Obchodní podmínky</a><a href="/soukromi.html">Ochrana osobních údajů</a><a href="/app/">Přihlášení</a></span>
     </footer>
   </body>
 </html>

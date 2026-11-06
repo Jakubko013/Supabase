@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { requestReset, setPassword, signIn } from '../auth';
+import { requestReset, setPassword, signIn, signUp } from '../auth';
+import { TRIAL_MATCHES } from '../club';
 import { isPwned, MIN_PASSWORD_LENGTH, passwordProblem } from '../password';
 import type { User } from '@supabase/supabase-js';
 
@@ -36,54 +37,96 @@ function Shell({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
+type Mode = 'login' | 'signup' | 'reset' | 'sent' | 'signedUp';
+
+const TITLES: Record<Mode, string> = {
+  login: 'Přihlášení',
+  signup: 'Zkušební verze',
+  reset: 'Obnovení hesla',
+  sent: 'Obnovení hesla',
+  signedUp: 'Potvrďte e-mail',
+};
+
+/** Odkaz z webu „Vyzkoušet zdarma“ vede na /app/?registrace. */
+const wantsSignup = () => new URLSearchParams(window.location.search).has('registrace');
+
 export function Login({ notice }: { notice?: string }) {
-  const [mode, setMode] = useState<'login' | 'reset' | 'sent'>('login');
+  const [mode, setMode] = useState<Mode>(wantsSignup() ? 'signup' : 'login');
   const [email, setEmail] = useState('');
   const [password, setPw] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  const go = (m: Mode) => {
+    setError(null);
+    setMode(m);
+  };
+
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
-    setBusy(true);
     setError(null);
+    if (mode === 'signup') {
+      const problem = passwordProblem(password, email);
+      if (problem) return setError(problem);
+    }
+    setBusy(true);
     if (mode === 'login') setError(await signIn(email, password));
-    else {
+    else if (mode === 'signup') {
+      if (await isPwned(password)) setError('Toto heslo se objevilo v uniklých databázích. Zvolte jiné.');
+      else {
+        const err = await signUp(email, password);
+        if (err) setError(err);
+        else setMode('signedUp');
+      }
+    } else {
       await requestReset(email);
       setMode('sent');
     }
     setBusy(false);
   }
 
-  if (mode === 'sent')
+  if (mode === 'sent' || mode === 'signedUp')
     return (
-      <Shell title="Obnovení hesla">
+      <Shell title={TITLES[mode]}>
         <p className="banner banner-ok" role="status">
-          Pokud je u nás tento e-mail registrovaný, poslali jsme na něj odkaz pro nastavení nového hesla.
+          {mode === 'sent'
+            ? 'Pokud je u nás tento e-mail registrovaný, poslali jsme na něj odkaz pro nastavení nového hesla.'
+            : `Poslali jsme e-mail na ${email}. Klikněte na odkaz v něm a účet je hotový. Pokud nepřišel, podívejte se do spamu.`}
         </p>
-        <button className="btn" onClick={() => setMode('login')}>
+        <button className="btn" onClick={() => go('login')}>
           Zpět na přihlášení
         </button>
       </Shell>
     );
 
   return (
-    <Shell title={mode === 'login' ? 'Přihlášení' : 'Obnovení hesla'}>
+    <Shell title={TITLES[mode]}>
       <form className="card form" onSubmit={submit}>
         {notice && (
           <p className="banner banner-bad" role="alert">
             {notice}
           </p>
         )}
+        {mode === 'signup' && (
+          <p className="muted">Vyzkoušejte zápis {TRIAL_MATCHES} zápasů zdarma, bez platební karty. Licenci pro klub koupíte až v aplikaci.</p>
+        )}
         <label className="field">
           <span>E-mail</span>
-          <input type="email" autoComplete="username" required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="email" autoComplete={mode === 'signup' ? 'email' : 'username'} required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
         </label>
-        {mode === 'login' && (
+        {(mode === 'login' || mode === 'signup') && (
           <label className="field">
-            <span>Heslo</span>
-            <input type="password" autoComplete="current-password" required maxLength={128} value={password} onChange={(e) => setPw(e.target.value)} />
+            <span>{mode === 'signup' ? `Heslo (min. ${MIN_PASSWORD_LENGTH} znaků)` : 'Heslo'}</span>
+            <input
+              type="password"
+              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+              required
+              minLength={mode === 'signup' ? MIN_PASSWORD_LENGTH : undefined}
+              maxLength={128}
+              value={password}
+              onChange={(e) => setPw(e.target.value)}
+            />
           </label>
         )}
         {error && (
@@ -93,15 +136,26 @@ export function Login({ notice }: { notice?: string }) {
         )}
         <div className="actions">
           <button className="btn btn-primary btn-lg" type="submit" disabled={busy}>
-            {mode === 'login' ? 'Přihlásit se' : 'Poslat odkaz'}
+            {mode === 'login' ? 'Přihlásit se' : mode === 'signup' ? 'Vytvořit účet' : 'Poslat odkaz'}
           </button>
-          <button className="btn btn-ghost" type="button" onClick={() => { setError(null); setMode(mode === 'login' ? 'reset' : 'login'); }}>
-            {mode === 'login' ? 'Zapomenuté heslo' : 'Zpět'}
-          </button>
+          {mode === 'login' ? (
+            <button className="btn btn-ghost" type="button" onClick={() => go('reset')}>
+              Zapomenuté heslo
+            </button>
+          ) : (
+            <button className="btn btn-ghost" type="button" onClick={() => go('login')}>
+              Mám účet – přihlásit
+            </button>
+          )}
         </div>
-        <p className="muted">
-          Nemáte účet? <a href="/#pozvanka">Požádejte o pozvánku</a>
-        </p>
+        {mode === 'login' && (
+          <p className="muted">
+            Nemáte účet?{' '}
+            <button className="link-btn" type="button" onClick={() => go('signup')}>
+              Vyzkoušejte zdarma
+            </button>
+          </p>
+        )}
       </form>
     </Shell>
   );

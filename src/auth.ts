@@ -70,6 +70,16 @@ export async function signIn(email: string, password: string): Promise<string | 
   return error ? (error.status === 429 ? 'Příliš mnoho pokusů. Zkuste to za chvíli.' : LOGIN_ERROR) : null;
 }
 
+/** Registrace do zkušební verze; účet se aktivuje potvrzením e-mailu. Neprozradí, zda e-mail už existuje. */
+export async function signUp(email: string, password: string): Promise<string | null> {
+  if (!supabase) return 'Aplikace není nakonfigurovaná.';
+  const { error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: `${window.location.origin}/app/` } });
+  if (!error) return null;
+  if (error.status === 429) return 'Příliš mnoho pokusů. Zkuste to za chvíli.';
+  if (/weak|pwned|password/i.test(error.message)) return 'Heslo je příliš slabé. Zvolte jiné.';
+  return 'Účet se nepodařilo vytvořit. Zkuste to znovu.';
+}
+
 export async function requestReset(email: string): Promise<void> {
   // Výsledek se záměrně ignoruje – odpověď uživateli je vždy stejná.
   await supabase?.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/app/` });
