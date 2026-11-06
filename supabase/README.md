@@ -20,8 +20,11 @@
    - Developers → Webhooks → endpoint `https://<projekt>.supabase.co/functions/v1/stripe-webhook`, události `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted` → Signing secret (`whsec_…`).
    - Settings → Business details (IČO, adresa); Settings → Invoices → patička „Nejsem plátce DPH.“; Settings → Billing → Customer portal zapnout (zrušení předplatného, faktury).
 5. **Edge Functions → Secrets:** `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`, `SITE_URL=https://volleystat.cz/app/` (volitelně `ALLOWED_ORIGINS`).
-6. **Nasadit funkce** z `functions/` (`supabase functions deploy`, nebo Dashboard → Edge Functions → Deploy new function → Via editor): `checkout`, `portal`, `invite`, `stripe-webhook`. U **všech čtyř** vypnout **„Verify JWT“** – funkce si přihlášení ověřují samy, webhook ověřuje podpis Stripe.
-   Nasazené adresy (slug) v projektu: checkout = `hyper-processor`, portal = `dynamic-task`, invite = `smart-processor`, stripe-webhook = `smart-service` (aplikace je volá podle `src/club.ts`; webhook ve Stripe musí vést na `…/functions/v1/smart-service`).
+6. **Nasadit 2 funkce** z `functions/` (`supabase functions deploy`, nebo Dashboard → Edge Functions → Deploy new function → Via editor):
+   - `club-api` – nákup licence, správa plateb, pozvání člena (aplikace posílá `{ action }`),
+   - `stripe-webhook` – prodloužení licence po zaplacení.
+   U obou vypnout **„Verify JWT“**. Nasazené adresy (slug) v projektu: club-api = `hyper-processor`, stripe-webhook = `smart-service`
+   (aplikace volá `hyper-processor`, viz `src/club.ts`; webhook ve Stripe vede na `…/functions/v1/smart-service`).
 7. Test: registrace → 2 zápasy → Klub → Koupit licenci (testovací karta `4242 4242 4242 4242`) → licence aktivní → pozvat člena.
 
 Licenci ručně (např. pro sebe): `update clubs set license_until = now() + interval '1 year' where id = '<club_id>';`

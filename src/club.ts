@@ -71,16 +71,12 @@ async function call<T>(client: SupabaseClient, name: string, body: Record<string
   return data as T;
 }
 
-/** Adresy (slug) serverových funkcí v Supabase – Dashboard je při vytvoření pojmenoval sám. Lze přepsat env proměnnými. */
-const FN = {
-  checkout: import.meta.env.VITE_FN_CHECKOUT ?? 'hyper-processor',
-  portal: import.meta.env.VITE_FN_PORTAL ?? 'dynamic-task',
-  invite: import.meta.env.VITE_FN_INVITE ?? 'smart-processor',
-};
+/** Adresa (slug) serverové funkce `club-api` v Supabase – Dashboard ji při vytvoření pojmenoval sám. */
+const CLUB_API = import.meta.env.VITE_FN_CLUB_API ?? 'hyper-processor';
 
-export const startCheckout = (client: SupabaseClient) => call<{ url: string }>(client, FN.checkout);
-export const openBillingPortal = (client: SupabaseClient) => call<{ url: string }>(client, FN.portal);
-export const inviteMember = (client: SupabaseClient, email: string) => call<{ ok: true }>(client, FN.invite, { email });
+export const startCheckout = (client: SupabaseClient) => call<{ url: string }>(client, CLUB_API, { action: 'checkout' });
+export const openBillingPortal = (client: SupabaseClient) => call<{ url: string }>(client, CLUB_API, { action: 'portal' });
+export const inviteMember = (client: SupabaseClient, email: string) => call<{ ok: true }>(client, CLUB_API, { action: 'invite', email });
 
 export async function removeMember(client: SupabaseClient, clubId: string, userId: string): Promise<void> {
   const { error } = await client.from('club_members').delete().eq('club_id', clubId).eq('user_id', userId);
