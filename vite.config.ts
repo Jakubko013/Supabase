@@ -15,13 +15,25 @@ const nativeEntry = (): Plugin => ({
   },
 });
 
+/** Verze sestavení: aplikace ji porovnává s /app/version.json a starou verzi v zařízení nahradí novou. */
+const APP_VERSION = new Date().toISOString();
+
+const versionFile = (): Plugin => ({
+  name: 'version-file',
+  apply: 'build',
+  generateBundle() {
+    this.emitFile({ type: 'asset', fileName: 'app/version.json', source: JSON.stringify({ version: APP_VERSION }) });
+  },
+});
+
 export default defineConfig(({ mode }) => ({
+  define: { __APP_VERSION__: JSON.stringify(APP_VERSION) },
   build: {
     rollupOptions: { input: mode === 'native' ? { app: resolve('app/index.html') } : { main: resolve('index.html'), app: resolve('app/index.html') } },
   },
   plugins: [
     react(),
-    mode === 'native' ? nativeEntry() : null,
+    mode === 'native' ? nativeEntry() : versionFile(),
     VitePWA({
       // Android (Capacitor) a Windows (Electron) mají soubory v balíčku – service worker by jen držel staré verze.
       // Online náhled (mode demo) service worker nepodporuje.

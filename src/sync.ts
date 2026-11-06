@@ -10,6 +10,8 @@ const LOCKED_RETRY_MS = 5 * 60_000;
 
 /** Co ještě nebylo odesláno na server (přežije zavření aplikace i offline). */
 interface Outbox {
+  /** Klub, do kterého změny patří – po přechodu do jiného klubu (odebrání člena) se zahodí, aby data neutekla jinam. */
+  club?: string;
   up: Record<string, number>;
   del: string[];
   rosters: boolean;
@@ -49,12 +51,20 @@ export interface SyncDeps {
   /** Synchronně nahradí seznam zápasů výsledkem funkce (bez znovuodeslání na server). */
   replaceMatches: (fn: (local: Match[]) => Match[]) => void;
   onStatus: (s: SyncStatus) => void;
+  /** Kdo a kdy zápasy naposledy uložil na server (varování při souběžném zápisu více členů). */
+  onRemoteMeta?: (meta: Map<string, RemoteMeta>) => void;
+}
+
+export interface RemoteMeta {
+  updatedAt: number;
+  updatedBy: string | null;
 }
 
 export function createSync(client: SupabaseClient, userId: string, clubId: string, deps: SyncDeps) {
   const boxKey = `vs:u:${userId}:outbox`;
-  const stored = read<Partial<Outbox>>(boxKey, {});
-  const box: Outbox = { up: stored.up && typeof stored.up === 'object' ? stored.up : {}, del: Array.isArray(stored.del) ? stored.del : [], rosters: !!stored.rosters };
+  const raw = read<Partial<Outbox>>(boxKey, {});
+  const stored = raw.club && raw.club !== clubId ? {} : raw;
+  const box: Outbox = { club: clubId, up: stored.up && typeof stored.up === 'object' ? stored.up : {}, del: Array.isArray(stored.del) ? stored.del : [], rosters: !!stored.rosters };
   const persist = () => write(boxKey, box);
   const pending = () => Object.keys(box.up).length + box.del.length + (box.rosters ? 1 : 0);
 
@@ -154,12 +164,20 @@ export function createSync(client: SupabaseClient, userId: string, clubId: strin
     if (pending() && !(await flush())) return;
     try {
       const remote: Match[] = [];
+      const meta = new Map<string, RemoteMeta>();
       for (let from = 0; ; from += PAGE) {
-        const { data, error } = await client.from('matches').select('data').eq('club_id', clubId).order('created_at', { ascending: false }).range(from, from + PAGE - 1);
+        // select('*'): sloupec updated_by přidala až migrace 0003 – bez ní synchronizace funguje dál.
+        const { data, error } = await client.from('matches').select('*').eq('club_id', clubId).order('created_at', { ascending: false }).range(from, from + PAGE - 1);
         if (error) throw error;
-        remote.push(...data.map((r) => r.data as Match).filter((m) => m && typeof m.id === 'string' && Array.isArray(m.events) && Array.isArray(m.players)).map(normalizeMatch));
+        for (const r of data as { id: string; data: Match; updated_at?: string; updated_by?: string | null }[]) {
+          const m = r.data;
+          if (!m || typeof m.id !== 'string' || !Array.isArray(m.events) || !Array.isArray(m.players)) continue;
+          remote.push(normalizeMatch(m));
+          meta.set(m.id, { updatedAt: r.updated_at ? Date.parse(r.updated_at) : 0, updatedBy: r.updated_by ?? null });
+        }
         if (data.length < PAGE) break;
       }
+      deps.onRemoteMeta?.(meta);
       const { data: rosterRows, error: rErr } = await client.from('rosters').select('data').eq('club_id', clubId);
       if (rErr) throw rErr;
 

@@ -11,7 +11,7 @@ import { getRoute, navigate } from './router';
 import { createDemoMatch } from './demo';
 import { useAuth } from './auth';
 import { supabase } from './supabase';
-import { createSync, diffMatches, type Sync, type SyncStatus } from './sync';
+import { createSync, diffMatches, type RemoteMeta, type Sync, type SyncStatus } from './sync';
 import { isValidMatchId, mergeMatches } from './backup';
 import { canCreateMatch, canWrite, licenseOf, loadClub, type Club, type ClubMember, type License } from './club';
 import { ClubView } from './screens/ClubView';
@@ -37,6 +37,11 @@ export function App() {
   }
 }
 
+/** Zápas před chvílí uložil na server jiný člen klubu – při souběžném zápisu by se změny přepsaly. */
+const OTHER_EDITOR_MS = 3 * 60_000;
+const editedByOther = (meta: RemoteMeta | undefined, userId: string) =>
+  !!meta?.updatedBy && meta.updatedBy !== userId && Date.now() - meta.updatedAt < OTHER_EDITOR_MS;
+
 const STATUS_TEXT: Record<SyncStatus, string> = {
   idle: 'Uloženo na serveru',
   syncing: 'Ukládám…',
@@ -57,6 +62,7 @@ function Main({ user }: { user: User | null }) {
   });
   const [saveFailed, setSaveFailed] = useState(false);
   const [status, setStatus] = useState<SyncStatus>('idle');
+  const [remoteMeta, setRemoteMeta] = useState<Map<string, RemoteMeta>>(() => new Map());
   const clubKey = user ? `vs:u:${user.id}:club` : '';
   const [clubState, setClubState] = useState<{ club: Club; members: ClubMember[] } | null>(() => {
     // Poslední známý stav klubu – aplikace se pak spustí i bez internetu.
@@ -113,6 +119,7 @@ function Main({ user }: { user: User | null }) {
       getMatches: () => matchesRef.current,
       replaceMatches: (fn) => apply(fn, false),
       onStatus: setStatus,
+      onRemoteMeta: setRemoteMeta,
     });
     syncRef.current = sync;
     setRosterListener(sync.markRosters);
@@ -124,12 +131,15 @@ function Main({ user }: { user: User | null }) {
       void refreshClub();
     };
     refresh();
+    // Každou minutu stáhnout změny ostatních členů klubu (varování při souběžném zápisu).
+    const poll = setInterval(refresh, 60_000);
     // Odeslat rozdělanou práci, než se stránka zavře nebo uspí.
     const hide = () => document.visibilityState === 'hidden' && void sync.flush();
     window.addEventListener('online', refresh);
     document.addEventListener('visibilitychange', refresh);
     document.addEventListener('visibilitychange', hide);
     return () => {
+      clearInterval(poll);
       window.removeEventListener('online', refresh);
       document.removeEventListener('visibilitychange', refresh);
       document.removeEventListener('visibilitychange', hide);
@@ -185,7 +195,7 @@ function Main({ user }: { user: User | null }) {
     );
   } else if (screen === 'match' && match) {
     content =
-      sub === 'stats' || match.finished || !writable ? <StatsView match={match} /> : <Recording match={match} updateMatch={updateMatch} />;
+      sub === 'stats' || match.finished || !writable ? <StatsView match={match} /> : <Recording match={match} updateMatch={updateMatch} otherEditor={!!user && editedByOther(remoteMeta.get(match.id), user.id)} />;
   } else {
     content = (
       <Home matches={matches} license={license} onDelete={(mid) => apply((list) => list.filter((m) => m.id !== mid))} onImport={(list) => apply(() => list)} />

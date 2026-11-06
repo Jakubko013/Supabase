@@ -5,6 +5,7 @@ interface Props {
   children: ReactNode;
   confirmText?: string;
   className?: string;
+  disabled?: boolean;
   'aria-label'?: string;
 }
 

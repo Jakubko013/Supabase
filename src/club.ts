@@ -77,6 +77,8 @@ const CLUB_API = import.meta.env.VITE_FN_CLUB_API ?? 'hyper-processor';
 export const startCheckout = (client: SupabaseClient) => call<{ url: string }>(client, CLUB_API, { action: 'checkout' });
 export const openBillingPortal = (client: SupabaseClient) => call<{ url: string }>(client, CLUB_API, { action: 'portal' });
 export const inviteMember = (client: SupabaseClient, email: string) => call<{ ok: true }>(client, CLUB_API, { action: 'invite', email });
+/** Trvalé smazání účtu (u samotného správce i klubu se zápasy a zrušením předplatného). */
+export const deleteAccount = (client: SupabaseClient) => call<{ ok: true }>(client, CLUB_API, { action: 'delete_account' });
 
 export async function removeMember(client: SupabaseClient, clubId: string, userId: string): Promise<void> {
   const { error } = await client.from('club_members').delete().eq('club_id', clubId).eq('user_id', userId);

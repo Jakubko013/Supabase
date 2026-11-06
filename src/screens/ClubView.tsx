@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { clearUserStorage } from '../storage';
 import {
+  deleteAccount,
   LICENSE_PRICE,
   TRIAL_MATCHES,
   daysLeft,
@@ -160,6 +162,31 @@ export function ClubView({ client, user, club, members, license, onChanged, reas
         await renameClub(client, club.id, name);
         onChanged();
       })} />}
+
+      <section className="card form" aria-labelledby="account-title">
+        <h2 id="account-title">Účet</h2>
+        <p className="muted">
+          {isAdmin && members.length > 1
+            ? 'Účet správce lze smazat, až v klubu nezůstanou další členové.'
+            : isAdmin
+              ? 'Smazání účtu trvale odstraní i klub se všemi zápasy a soupiskami a zruší předplatné (bez vrácení peněz). Zápasy si předem uložte do zálohy.'
+              : 'Smazání účtu odstraní váš přístup. Zápasy klubu zůstanou správci.'}
+        </p>
+        <ConfirmButton
+          className="btn btn-bad"
+          confirmText="Opravdu trvale smazat?"
+          disabled={!!busy || (isAdmin && members.length > 1)}
+          onConfirm={() =>
+            void run('delete', async () => {
+              await deleteAccount(client);
+              clearUserStorage(user.id);
+              await client.auth.signOut({ scope: 'local' });
+            })
+          }
+        >
+          Smazat účet
+        </ConfirmButton>
+      </section>
     </main>
   );
 }

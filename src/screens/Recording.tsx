@@ -50,7 +50,7 @@ export function describeEvent(e: MatchEvent, match: Match): string {
 /** Střídání: vybere se hráč na hřišti a hráč z lavičky téhož týmu (v libovolném pořadí). */
 type Sub = { side: Side; out?: string; in?: string } | null;
 
-export function Recording({ match, updateMatch }: { match: Match; updateMatch: MatchUpdater }) {
+export function Recording({ match, updateMatch, otherEditor = false }: { match: Match; updateMatch: MatchUpdater; otherEditor?: boolean }) {
   const [last, setLast] = useState<MatchEvent | null>(null);
   /** Potvrzení poslední akce s tlačítkem Vrátit – po chvíli zmizí. */
   const [toastId, setToastId] = useState<string | null>(null);
@@ -204,6 +204,11 @@ export function Recording({ match, updateMatch }: { match: Match; updateMatch: M
 
   return (
     <main className="page page-wide page-rec">
+      {otherEditor && (
+        <p className="banner banner-bad" role="alert">
+          Tento zápas před chvílí upravoval jiný člen klubu. Zapisujte ho vždy jen na jednom zařízení – jinak se změny navzájem přepíšou.
+        </p>
+      )}
       <header className="rec-header">
         <button className="btn btn-ghost" onClick={() => navigate('')}>
           ‹ Zápasy

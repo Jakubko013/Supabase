@@ -23,6 +23,11 @@
 6. **Nasadit funkci** `functions/club-api` (`supabase functions deploy club-api`, nebo Dashboard → Edge Functions → Deploy new function → Via editor).
    Obsluhuje aplikaci (`{ action: checkout | portal | invite }`) i webhook Stripe (pozná ho podle hlavičky `Stripe-Signature`).
    Vypnout **„Verify JWT“**. V projektu má adresu `hyper-processor` – aplikace ji volá (viz `src/club.ts`) a **webhook ve Stripe vede na `…/functions/v1/hyper-processor`**.
+   Události webhooku: `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted`, **`charge.refunded`** (úplný refund ukončí licenci a zruší předplatné).
+   Stripe → Settings → Public details: vyplnit **Terms of service URL** (`https://volleystat.cz/obchodni-podminky.html`) – checkout pak vyžaduje zaškrtnutí souhlasu.
 7. Test: registrace → 2 zápasy → Klub → Koupit licenci (testovací karta `4242 4242 4242 4242`) → licence aktivní → pozvat člena.
 
 Licenci ručně (např. pro sebe): `update clubs set license_until = now() + interval '1 year' where id = '<club_id>';`
+
+## Migrace 0003 (audit)
+`migrations/0003_audit.sql`: `matches.updated_by` (varování při souběžném zápisu více členů) a `clubs.invites_used` (nejvýše 2× počet míst pozvánek za licenční období). Aplikace i funkce fungují i bez ní, ale bez ní tyto ochrany neplatí.
