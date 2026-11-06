@@ -2,7 +2,7 @@
 // Volá jen přihlášený uživatel; přihlášení ověřuje funkce sama (Verify JWT na bráně vypnuté).
 // Tajné klíče: Supabase → Edge Functions → Secrets (STRIPE_SECRET_KEY, STRIPE_PRICE_ID, SITE_URL).
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import Stripe from 'npm:stripe@17';
+import Stripe from 'npm:stripe@18'; // API 2025-08-27.basil – vyžaduje ji Managed Payments
 
 const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://volleystat.cz/app/';
 const ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? 'https://volleystat.cz,https://www.volleystat.cz,http://localhost:5173').split(',');
