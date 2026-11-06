@@ -1130,3 +1130,32 @@ label.btn:focus-within {
 .match-sets i { font-style: normal; color: #4d5c8a; }
 .match-item > .actions { padding: 0.75rem 1rem; align-content: center; background: var(--surface-2); flex: 0 1 auto; }
 @media (min-width: 46rem) { .match-item > .actions { border-left: 1px solid var(--border); } }
+
+/* ---------- Klub a licence ---------- */
+.club-pill { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.65rem; border-radius: 999px; background: rgb(255 255 255 / 0.08); color: #fff; font-size: 0.8rem; font-weight: 650; text-decoration: none; max-width: 14rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.club-pill small { padding: 0.05rem 0.4rem; border-radius: 999px; background: var(--accent); color: var(--navy); font-size: 0.7rem; font-weight: 750; }
+.club-pill.is-bad small { background: #f87171; color: #fff; }
+.license-banner a { margin-left: auto; color: inherit; font-weight: 750; }
+.link-btn { padding: 0; border: 0; background: none; color: inherit; font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.auth .link-btn { color: var(--a-ball); }
+.small { font-size: 0.85rem; }
+
+.license-card { display: grid; gap: 0.9rem; padding: 1.25rem; border-width: 2px; }
+.license-card.is-active { border-color: var(--good); }
+.license-card.is-expired { border-color: var(--bad); }
+.license-card p { margin: 0; }
+.license-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.license-head h2 { margin: 0; }
+.license-state { padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.8rem; font-weight: 750; text-transform: uppercase; letter-spacing: 0.05em; background: var(--surface-2); }
+.is-active .license-state { background: var(--good-bg); color: var(--good); }
+.is-expired .license-state { background: var(--bad-bg); color: var(--bad); }
+.is-trial .license-state { background: #fff3c4; color: #7a5a00; }
+.license-features { margin: 0; padding-left: 1.2rem; color: var(--muted); }
+
+.member-list { list-style: none; margin: 0; padding: 0; width: 100%; }
+.member-list li { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+.member-list li > span:first-child { flex: 1; min-width: 0; }
+.member-role { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.invite-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem; width: 100%; }
+.invite-row .field { flex: 1 1 16rem; }
+a.btn { display: inline-flex; align-items: center; text-decoration: none; }

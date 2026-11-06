@@ -1,0 +1,4 @@
+# Nastavení serverových funkcí (Supabase CLI: `supabase functions deploy`).
+# Webhook volá Stripe bez přihlášení – pravost ověřuje podpis uvnitř funkce.
+[functions.stripe-webhook]
+verify_jwt = false

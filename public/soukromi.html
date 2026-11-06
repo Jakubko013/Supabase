@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ochrana osobních údajů – VolleyStat</title>
+    <meta name="description" content="Jak VolleyStat zpracovává osobní údaje: žádosti o pozvánku, uživatelské účty a statistiky zápasů." />
+    <meta name="theme-color" content="#0a1a3f" />
+    <link rel="canonical" href="https://volleystat.cz/soukromi.html" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/site.css" />
+  </head>
+  <body>
+    <header class="top top-simple">
+      <a class="logo" href="/">Volley<b>Stat</b></a>
+      <a class="login" href="/app/">Přihlásit se</a>
+    </header>
+
+    <main class="legal">
+      <p class="kicker dark">Právní informace</p>
+      <h1>Ochrana osobních údajů</h1>
+      <p class="legal-lead">
+        Údaje zpracováváme jen v rozsahu, který aplikace nutně potřebuje. Nepoužíváme reklamu, analytiku ani sledovací cookies a údaje
+        neprodáváme.
+      </p>
+
+      <h2>1. Kdo údaje zpracovává</h2>
+      <p>
+        Správcem osobních údajů je <strong>Jakub Kočvara</strong>, IČO 24611581, se sídlem Ruská 1934/10, 568 02 Svitavy (dále jen „my“).
+        Kontakt pro vše, co se týká osobních údajů: <a href="mailto:jakubdev@outlook.cz">jakubdev@outlook.cz</a>.
+      </p>
+
+      <h2>2. Jaké údaje, proč a jak dlouho</h2>
+      <div class="legal-table" role="region" aria-label="Přehled zpracování" tabindex="0">
+        <table>
+          <thead>
+            <tr><th>Údaje</th><th>Účel</th><th>Právní základ</th><th>Doba uložení</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Dotaz z formuláře na webu</strong> – jméno, e-mail, klub, role, zpráva</td>
+              <td>Odpověď na dotaz, nabídka licence</td>
+              <td>Kroky před uzavřením smlouvy na vaši žádost (čl. 6 odst. 1 písm. b GDPR)</td>
+              <td>Do vyřízení dotazu, nejdéle 12 měsíců</td>
+            </tr>
+            <tr>
+              <td><strong>Uživatelský účet a klub</strong> – e-mail, heslo (uložené jen jako zabezpečený otisk), čas přihlášení, název klubu, členové klubu a jejich role</td>
+              <td>Přihlášení a poskytování aplikace</td>
+              <td>Plnění smlouvy (čl. 6 odst. 1 písm. b GDPR)</td>
+              <td>Po dobu trvání účtu</td>
+            </tr>
+            <tr>
+              <td><strong>Nákup licence</strong> – jméno nebo název, fakturační adresa, IČO/DIČ, e-mail, údaje o platbě a fakturách (číslo karty vidí jen platební brána Stripe, my ne)</td>
+              <td>Prodej licence, vystavení faktury, správa předplatného</td>
+              <td>Plnění smlouvy a zákonné povinnosti v účetnictví a daních (čl. 6 odst. 1 písm. b a c GDPR)</td>
+              <td>Po dobu stanovenou účetními a daňovými předpisy (zpravidla 10 let)</td>
+            </tr>
+            <tr>
+              <td><strong>Zápasy a soupisky</strong> – jména hráčů, čísla dresů, posty, zapsané akce a statistiky</td>
+              <td>Uložení a zobrazení vašich statistik, synchronizace mezi zařízeními</td>
+              <td>Plnění smlouvy vůči vám; u hráčů oprávněný zájem na vedení sportovní statistiky (čl. 6 odst. 1 písm. f GDPR)</td>
+              <td>Dokud zápas nebo účet nesmažete</td>
+            </tr>
+            <tr>
+              <td><strong>Technické záznamy</strong> – IP adresa a čas požadavku u poskytovatelů hostingu</td>
+              <td>Zabezpečení a provoz služby</td>
+              <td>Oprávněný zájem (čl. 6 odst. 1 písm. f GDPR)</td>
+              <td>Podle nastavení poskytovatele, obvykle dny až týdny</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>3. Údaje o hráčích</h2>
+      <p>
+        Jména a čísla hráčů zadává uživatel aplikace, případně je načte z veřejných soupisek Českého volejbalového svazu (cvf.cz). Používají se
+        jen pro statistiku daného týmu, vidí je jen uživatel, který je zadal, a nikam je nezveřejňujeme. Pokud jste hráč (nebo zákonný zástupce
+        nezletilého hráče) a nesouhlasíte se zpracováním, napište nám a údaje odstraníme.
+      </p>
+
+      <h2>4. Komu údaje předáváme</h2>
+      <p>Údaje zpracovávají jen tito poskytovatelé, kteří pro nás zajišťují provoz:</p>
+      <ul>
+        <li><strong>Supabase</strong> – databáze a přihlašování; data jsou uložena v EU (Stockholm, Švédsko).</li>
+        <li><strong>Netlify</strong> – provoz webu a příjem formuláře žádosti o pozvánku.</li>
+        <li><strong>Resend</strong> – odesílání e-mailů (potvrzení registrace, pozvánky, obnovení hesla).</li>
+        <li><strong>Stripe</strong> – platby kartou, vystavování faktur a správa předplatného.</li>
+        <li><strong>Active24</strong> – správa domény volleystat.cz.</li>
+      </ul>
+      <p>
+        Netlify, Resend a Stripe jsou společnosti se sídlem v USA (Stripe zpracovává platby v EU přes Stripe Payments Europe, Irsko). Předání údajů probíhá na základě rámce EU–USA pro ochranu osobních údajů (Data
+        Privacy Framework), případně standardních smluvních doložek Evropské komise.
+      </p>
+      <p>
+        Při nastavení hesla aplikace ověřuje, zda heslo neuniklo, ve službě Have I Been Pwned. Odesílá se jen prvních 5 znaků otisku hesla,
+        nikdy heslo ani e-mail. Soupisky z cvf.cz se načítají přes náš web a žádné vaše údaje se na cvf.cz neposílají.
+      </p>
+
+      <h2>5. Cookies a úložiště v zařízení</h2>
+      <p>
+        Nepoužíváme reklamní ani analytické cookies. Aplikace si do úložiště vašeho prohlížeče ukládá jen to, co nutně potřebuje: přihlášení a
+        zápasy pro práci bez internetu. Po odhlášení se tato data ze zařízení smažou. Protože jde o nezbytné úložiště, souhlas k němu není
+        potřeba.
+      </p>
+
+      <h2>6. Zabezpečení</h2>
+      <p>
+        Veškerá komunikace je šifrovaná (HTTPS). Hesla se ukládají jen jako zabezpečený otisk. Přístup k datům hlídá přímo databáze: každý účet
+        vidí jen svoje zápasy a soupisky.
+      </p>
+
+      <h2>7. Vaše práva</h2>
+      <ul>
+        <li>získat přístup ke svým údajům a jejich kopii,</li>
+        <li>požádat o opravu nebo výmaz,</li>
+        <li>požádat o omezení zpracování nebo vznést námitku,</li>
+        <li>na přenositelnost – zápasy si můžete kdykoli stáhnout jako zálohu (Uložit zálohu v aplikaci),</li>
+        <li>podat stížnost u Úřadu pro ochranu osobních údajů (<a href="https://uoou.gov.cz" rel="noopener">uoou.gov.cz</a>).</li>
+      </ul>
+      <p>Žádost pošlete na <a href="mailto:jakubdev@outlook.cz">jakubdev@outlook.cz</a>. Vyřídíme ji bez zbytečného odkladu, nejpozději do jednoho měsíce.</p>
+
+      <p class="legal-date">Platné od 6. 11. 2026. Podmínky používání služby najdete v <a href="/obchodni-podminky.html">obchodních podmínkách</a>.</p>
+    </main>
+
+    <footer class="foot">
+      <span>© 2026 VolleyStat</span>
+      <a href="/">Zpět na web</a>
+    </footer>
+  </body>
+</html>

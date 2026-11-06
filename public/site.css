@@ -236,3 +236,44 @@ a { color: inherit; }
 .thanks { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .thanks h1 { margin: 1.75rem 0 1.5rem; font: 400 clamp(3rem, 10vw, 6.5rem)/1.22 var(--display); text-transform: uppercase; }
 .thanks .invite-lead { max-width: 34rem; margin-bottom: 2.5rem; }
+
+/* Právní stránky */
+.top-simple { grid-template-columns: 1fr auto; }
+.top-simple .logo { gap: 0; }
+.foot-links { display: inline-flex; flex-wrap: wrap; gap: 1.25rem; }
+.invite-note a { color: #c7d0ea; }
+.legal { max-width: 46rem; margin: 0 auto; padding: clamp(2.5rem, 7vw, 4.5rem) clamp(1rem, 4vw, 2.5rem) 4rem; }
+.legal h1 { margin: 0.75rem 0 1.25rem; font: 400 clamp(2.4rem, 7vw, 4rem)/1.28 var(--display); text-transform: uppercase; }
+.legal-lead { font-size: 1.15rem; color: var(--ink-muted); }
+.legal h2 { margin: 2.5rem 0 0.75rem; font-size: 1.35rem; font-weight: 800; letter-spacing: -0.01em; }
+.legal p, .legal li { color: var(--ink); }
+.legal p + p { margin-top: 0.75rem; }
+.legal ul { padding-left: 1.25rem; }
+.legal li + li { margin-top: 0.35rem; }
+.legal a { color: var(--court-ink); font-weight: 650; }
+.legal-table { overflow-x: auto; margin-top: 0.5rem; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-2); }
+.legal-table table { width: 100%; min-width: 40rem; border-collapse: collapse; font-size: 0.95rem; }
+.legal-table th, .legal-table td { padding: 0.75rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+.legal-table th { font: 0.85rem/1.2 var(--display); text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-muted); }
+.legal-table tr:last-child td { border-bottom: 0; }
+.legal-date { margin-top: 2.5rem; color: var(--ink-muted); font-size: 0.9rem; }
+
+/* Ceník */
+.pricing { max-width: 72rem; margin: 0 auto; padding: clamp(4rem, 9vw, 6rem) clamp(1rem, 4vw, 2.5rem); }
+.pricing h2 { margin-top: 0.75rem; font: 400 clamp(2.6rem, 7vw, 5.2rem)/1.22 var(--display); text-transform: uppercase; }
+.plans { display: grid; gap: 1.5rem; margin-top: 2.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); align-items: stretch; }
+.plan { position: relative; display: flex; flex-direction: column; gap: 1rem; padding: 1.75rem; border: 2px solid var(--line); border-radius: 18px; background: var(--paper-2); }
+.plan-main { border-color: var(--navy); background: var(--navy); color: #fff; box-shadow: 10px 10px 0 var(--court); }
+.plan h3 { font-size: 1.35rem; font-weight: 800; }
+.plan-price { font-size: 1.1rem; color: var(--ink-muted); }
+.plan-main .plan-price { color: #c7d0ea; }
+.plan-price b { font: 400 clamp(2.6rem, 6vw, 3.4rem)/1 var(--display); color: var(--ink); margin-right: 0.35rem; }
+.plan-main .plan-price b { color: var(--ball); }
+.plan ul { margin: 0; padding-left: 1.2rem; flex: 1; }
+.plan li + li { margin-top: 0.4rem; }
+.plan-badge { position: absolute; top: -0.9rem; right: 1.25rem; padding: 0.3rem 0.8rem; background: var(--court); color: #fff; font: 0.85rem/1 var(--display); text-transform: uppercase; letter-spacing: 0.1em; }
+.plan-link { align-self: flex-start; font-weight: 750; color: var(--court-ink); }
+.plan-main .btn-slant { align-self: flex-start; margin-top: 0.5rem; }
+.plan-note { font-size: 0.85rem; color: #a9b3d1; }
+.invite-trial { text-align: center; margin-bottom: 2.5rem; }
+.plan-note a { color: var(--ball); }

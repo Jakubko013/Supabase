@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Match } from '../types';
 import { setsWon } from '../stats';
 import { navigate } from '../router';
+import { LICENSE_PRICE, TRIAL_MATCHES, daysLeft, type License } from '../club';
 import { ConfirmButton } from '../components/ConfirmButton';
 import { STORAGE_LIMIT, createBackup, mergeMatches, parseBackup, storageUsed } from '../backup';
 import { loadRosters, mergeRosters } from '../storage';
@@ -9,6 +10,8 @@ import { downloadBlob, isShareCancel, shareFile } from '../share';
 
 interface Props {
   matches: Match[];
+  /** null = neznámý stav (offline bez uložené licence) nebo náhled bez účtu. */
+  license?: License | null;
   onDelete: (id: string) => void;
   onImport: (matches: Match[]) => void;
 }
@@ -17,7 +20,7 @@ const isNative = !!window.Capacitor?.isNativePlatform?.();
 // Online náhled (mode demo) běží v sandboxu, který stahování nepovolí.
 const exportable = import.meta.env.MODE !== 'demo';
 
-export function Home({ matches, onDelete, onImport }: Props) {
+export function Home({ matches, license, onDelete, onImport }: Props) {
   return (
     <main className="page home">
       <header className="home-head">
@@ -29,6 +32,8 @@ export function Home({ matches, onDelete, onImport }: Props) {
           + Nový zápas
         </button>
       </header>
+
+      {license && <LicenseBanner license={license} />}
 
       {matches.length === 0 ? (
         <div className="home-empty">
@@ -91,6 +96,31 @@ export function Home({ matches, onDelete, onImport }: Props) {
       )}
       <BackupCard matches={matches} onImport={onImport} />
     </main>
+  );
+}
+
+/** Stav licence nad seznamem zápasů: zkušební verze, blížící se konec, vypršení. */
+function LicenseBanner({ license }: { license: License }) {
+  if (license.kind === 'active') {
+    const d = daysLeft(license.until);
+    if (d > 30) return null;
+    return (
+      <p className="banner license-banner" role="status">
+        Licence klubu skončí za {d} {d === 1 ? 'den' : d < 5 ? 'dny' : 'dní'}. <a href="#/club">Prodloužit</a>
+      </p>
+    );
+  }
+  if (license.kind === 'expired')
+    return (
+      <p className="banner banner-bad license-banner" role="alert">
+        Licence klubu vypršela {license.until.toLocaleDateString('cs-CZ')}. Zápasy si můžete prohlížet, nové zapisovat ne. <a href="#/club">Obnovit licenci</a>
+      </p>
+    );
+  return (
+    <p className="banner license-banner" role="status">
+      Zkušební verze: {license.left > 0 ? `zbývá ${license.left} z ${TRIAL_MATCHES} zápasů zdarma.` : `využili jste ${TRIAL_MATCHES} zápasy zdarma.`}{' '}
+      <a href="#/club">Licence pro klub {LICENSE_PRICE} / sezóna</a>
+    </p>
   );
 }
 
