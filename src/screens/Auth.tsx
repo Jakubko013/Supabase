@@ -47,13 +47,31 @@ const TITLES: Record<Mode, string> = {
   signedUp: 'Potvrďte e-mail',
 };
 
+/** Poslední přihlášený e-mail – po odhlášení zůstane ve formuláři (heslo si pamatuje jen správce hesel prohlížeče). */
+const LAST_EMAIL_KEY = 'vs:lastEmail';
+const lastEmail = () => {
+  try {
+    return localStorage.getItem(LAST_EMAIL_KEY) ?? '';
+  } catch {
+    return '';
+  }
+};
+const rememberEmail = (email: string) => {
+  try {
+    localStorage.setItem(LAST_EMAIL_KEY, email.trim());
+  } catch {
+    // soukromý režim – nevadí
+  }
+};
+
 /** Odkaz z webu „Vyzkoušet zdarma“ vede na /app/?registrace. */
 const wantsSignup = () => new URLSearchParams(window.location.search).has('registrace');
 
 export function Login({ notice }: { notice?: string }) {
   const [mode, setMode] = useState<Mode>(wantsSignup() ? 'signup' : 'login');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(lastEmail);
   const [password, setPw] = useState('');
+  const [password2, setPw2] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -67,11 +85,15 @@ export function Login({ notice }: { notice?: string }) {
     if (busy) return;
     setError(null);
     if (mode === 'signup') {
-      const problem = passwordProblem(password, email);
+      const problem = passwordProblem(password, email) ?? (password !== password2 ? 'Hesla se neshodují.' : null);
       if (problem) return setError(problem);
     }
     setBusy(true);
-    if (mode === 'login') setError(await signIn(email, password));
+    if (mode === 'login') {
+      const err = await signIn(email, password);
+      if (!err) rememberEmail(email);
+      setError(err);
+    }
     else if (mode === 'signup') {
       if (await isPwned(password)) setError('Toto heslo se objevilo v uniklých databázích. Zvolte jiné.');
       else {
@@ -113,13 +135,14 @@ export function Login({ notice }: { notice?: string }) {
         )}
         <label className="field">
           <span>E-mail</span>
-          <input type="email" autoComplete={mode === 'signup' ? 'email' : 'username'} required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="email" name="email" autoComplete={mode === 'signup' ? 'email' : 'username'} required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
         </label>
         {(mode === 'login' || mode === 'signup') && (
           <label className="field">
             <span>{mode === 'signup' ? `Heslo (min. ${MIN_PASSWORD_LENGTH} znaků)` : 'Heslo'}</span>
             <input
               type="password"
+              name="password"
               autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
               required
               minLength={mode === 'signup' ? MIN_PASSWORD_LENGTH : undefined}
@@ -127,6 +150,12 @@ export function Login({ notice }: { notice?: string }) {
               value={password}
               onChange={(e) => setPw(e.target.value)}
             />
+          </label>
+        )}
+        {mode === 'signup' && (
+          <label className="field">
+            <span>Heslo znovu</span>
+            <input type="password" name="password2" autoComplete="new-password" required maxLength={128} value={password2} onChange={(e) => setPw2(e.target.value)} />
           </label>
         )}
         {error && (
