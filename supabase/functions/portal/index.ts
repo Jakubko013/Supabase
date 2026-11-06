@@ -6,6 +6,18 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { httpClient: Stri
 const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://volleystat.cz/app/';
 const ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? 'https://volleystat.cz,https://www.volleystat.cz,http://localhost:5173').split(',');
 
+/** Tajný klíč Supabase: nové klíče (SUPABASE_SECRET_KEYS = {"default": "sb_secret_…"}), jinak starý service_role. */
+function secretKey(): string {
+  try {
+    const keys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}') as Record<string, string>;
+    const key = keys.default ?? Object.values(keys)[0];
+    if (key) return key;
+  } catch {
+    // starý formát
+  }
+  return Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+}
+
 const cors = (req: Request) => {
   const origin = req.headers.get('Origin') ?? '';
   return {
@@ -22,12 +34,12 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: cors(req) });
   if (req.method !== 'POST') return json(req, { error: 'Nepovolená metoda.' }, 405);
   try {
-    const url = Deno.env.get('SUPABASE_URL')!;
-    const asUser = createClient(url, Deno.env.get('SUPABASE_ANON_KEY')!, { global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } } });
-    const { data: { user } } = await asUser.auth.getUser();
+    // Přihlášení ověřujeme tady (ne bránou Supabase): token uživatele z hlavičky Authorization.
+    const admin = createClient(Deno.env.get('SUPABASE_URL')!, secretKey());
+    const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '');
+    const { data: { user } } = token ? await admin.auth.getUser(token) : { data: { user: null } };
     if (!user) return json(req, { error: 'Přihlaste se prosím znovu.' }, 401);
 
-    const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const { data: member } = await admin.from('club_members').select('club_id, role').eq('user_id', user.id).maybeSingle();
     if (!member || member.role !== 'admin') return json(req, { error: 'Platby spravuje jen správce klubu.' }, 403);
     const { data: club } = await admin.from('clubs').select('stripe_customer_id').eq('id', member.club_id).single();
