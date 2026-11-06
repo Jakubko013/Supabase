@@ -5,6 +5,18 @@ const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://volleystat.cz/app/';
 const ORIGINS = (Deno.env.get('ALLOWED_ORIGINS') ?? 'https://volleystat.cz,https://www.volleystat.cz,http://localhost:5173').split(',');
 const EMAIL = /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/;
 
+/** Tajný klíč Supabase: nové klíče (SUPABASE_SECRET_KEYS = {"default": "sb_secret_…"}), jinak starý service_role. */
+function secretKey(): string {
+  try {
+    const keys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}') as Record<string, string>;
+    const key = keys.default ?? Object.values(keys)[0];
+    if (key) return key;
+  } catch {
+    // starý formát
+  }
+  return Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+}
+
 const cors = (req: Request) => {
   const origin = req.headers.get('Origin') ?? '';
   return {
@@ -21,16 +33,16 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: cors(req) });
   if (req.method !== 'POST') return json(req, { error: 'Nepovolená metoda.' }, 405);
   try {
-    const url = Deno.env.get('SUPABASE_URL')!;
-    const asUser = createClient(url, Deno.env.get('SUPABASE_ANON_KEY')!, { global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } } });
-    const { data: { user } } = await asUser.auth.getUser();
+    // Přihlášení ověřujeme tady (ne bránou Supabase): token uživatele z hlavičky Authorization.
+    const admin = createClient(Deno.env.get('SUPABASE_URL')!, secretKey());
+    const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '');
+    const { data: { user } } = token ? await admin.auth.getUser(token) : { data: { user: null } };
     if (!user) return json(req, { error: 'Přihlaste se prosím znovu.' }, 401);
 
     const { email: raw } = await req.json().catch(() => ({}));
     const email = typeof raw === 'string' ? raw.trim().toLowerCase() : '';
     if (!EMAIL.test(email) || email.length > 254) return json(req, { error: 'Zadejte platný e-mail.' }, 400);
 
-    const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
     const { data: me } = await admin.from('club_members').select('club_id, role').eq('user_id', user.id).maybeSingle();
     if (!me || me.role !== 'admin') return json(req, { error: 'Členy zve jen správce klubu.' }, 403);
     const { data: club } = await admin.from('clubs').select('seats, license_until').eq('id', me.club_id).single();

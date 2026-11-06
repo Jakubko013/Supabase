@@ -20,7 +20,7 @@
    - Developers → Webhooks → endpoint `https://<projekt>.supabase.co/functions/v1/stripe-webhook`, události `checkout.session.completed`, `invoice.paid`, `customer.subscription.deleted` → Signing secret (`whsec_…`).
    - Settings → Business details (IČO, adresa); Settings → Invoices → patička „Nejsem plátce DPH.“; Settings → Billing → Customer portal zapnout (zrušení předplatného, faktury).
 5. **Edge Functions → Secrets:** `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET`, `SITE_URL=https://volleystat.cz/app/` (volitelně `ALLOWED_ORIGINS`).
-6. **Nasadit funkce** z `functions/` (`supabase functions deploy`, nebo Dashboard → Edge Functions → Deploy new function → Via editor): `checkout`, `portal`, `invite`, `stripe-webhook`. U `stripe-webhook` **vypnout „Verify JWT“** (volá ho Stripe, ověřuje se podpis).
+6. **Nasadit funkce** z `functions/` (`supabase functions deploy`, nebo Dashboard → Edge Functions → Deploy new function → Via editor): `checkout`, `portal`, `invite`, `stripe-webhook`. U **všech čtyř** vypnout **„Verify JWT“** – funkce si přihlášení ověřují samy, webhook ověřuje podpis Stripe.
 7. Test: registrace → 2 zápasy → Klub → Koupit licenci (testovací karta `4242 4242 4242 4242`) → licence aktivní → pozvat člena.
 
 Licenci ručně (např. pro sebe): `update clubs set license_until = now() + interval '1 year' where id = '<club_id>';`

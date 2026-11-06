@@ -1,4 +1,14 @@
 # Nastavení serverových funkcí (Supabase CLI: `supabase functions deploy`).
-# Webhook volá Stripe bez přihlášení – pravost ověřuje podpis uvnitř funkce.
+# Ověření JWT na bráně je vypnuté: funkce si přihlášení ověřují samy (auth.getUser),
+# webhook ověřuje podpis Stripe. Funguje tak i s novými klíči Supabase (publishable / secret).
+[functions.checkout]
+verify_jwt = false
+
+[functions.portal]
+verify_jwt = false
+
+[functions.invite]
+verify_jwt = false
+
 [functions.stripe-webhook]
 verify_jwt = false
