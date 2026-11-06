@@ -1,2 +1,6 @@
+# Stará adresa projektu na Netlify → hlavní doména (trvalé přesměrování, zachová cestu).
+https://playful-churros-36ebd6.netlify.app/*  https://volleystat.cz/:splat  301!
+http://playful-churros-36ebd6.netlify.app/*   https://volleystat.cz/:splat  301!
+
 # Proxy na cvf.cz (prohlížeč nesmí volat cvf.cz napřímo kvůli CORS). Funguje i při nahrání přes Netlify Drop.
 /cvf/*  https://www.cvf.cz/:splat  200!
