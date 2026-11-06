@@ -47,31 +47,24 @@ const TITLES: Record<Mode, string> = {
   signedUp: 'Potvrďte e-mail',
 };
 
-/** Poslední přihlášený e-mail – po odhlášení zůstane ve formuláři (heslo si pamatuje jen správce hesel prohlížeče). */
-const LAST_EMAIL_KEY = 'vs:lastEmail';
-const lastEmail = () => {
-  try {
-    return localStorage.getItem(LAST_EMAIL_KEY) ?? '';
-  } catch {
-    return '';
-  }
-};
-const rememberEmail = (email: string) => {
-  try {
-    localStorage.setItem(LAST_EMAIL_KEY, email.trim());
-  } catch {
-    // soukromý režim – nevadí
-  }
-};
+/** Starší verze si pamatovala poslední e-mail – po odhlášení má být formulář prázdný, proto ho smažeme. */
+try {
+  localStorage.removeItem('vs:lastEmail');
+} catch {
+  // soukromý režim – nevadí
+}
 
 /** Odkaz z webu „Vyzkoušet zdarma“ vede na /app/?registrace. */
 const wantsSignup = () => new URLSearchParams(window.location.search).has('registrace');
 
 export function Login({ notice }: { notice?: string }) {
   const [mode, setMode] = useState<Mode>(wantsSignup() ? 'signup' : 'login');
-  const [email, setEmail] = useState(lastEmail);
+  const [email, setEmail] = useState('');
   const [password, setPw] = useState('');
   const [password2, setPw2] = useState('');
+  // Prohlížeč pole po načtení sám nevyplní: jsou jen pro čtení, dokud se jich uživatel nedotkne (po odhlášení prázdný formulář).
+  const [locked, setLocked] = useState(true);
+  const unlock = { readOnly: locked, onPointerDown: () => setLocked(false), onFocus: () => setLocked(false) };
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -89,11 +82,7 @@ export function Login({ notice }: { notice?: string }) {
       if (problem) return setError(problem);
     }
     setBusy(true);
-    if (mode === 'login') {
-      const err = await signIn(email, password);
-      if (!err) rememberEmail(email);
-      setError(err);
-    }
+    if (mode === 'login') setError(await signIn(email, password));
     else if (mode === 'signup') {
       if (await isPwned(password)) setError('Toto heslo se objevilo v uniklých databázích. Zvolte jiné.');
       else {
@@ -135,7 +124,7 @@ export function Login({ notice }: { notice?: string }) {
         )}
         <label className="field">
           <span>E-mail</span>
-          <input type="email" name="email" autoComplete={mode === 'signup' ? 'email' : 'username'} required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="email" name="email" autoComplete="off" {...unlock} required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
         </label>
         {(mode === 'login' || mode === 'signup') && (
           <label className="field">
@@ -143,7 +132,8 @@ export function Login({ notice }: { notice?: string }) {
             <input
               type="password"
               name="password"
-              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+              autoComplete={mode === 'signup' ? 'new-password' : 'off'}
+              {...unlock}
               required
               minLength={mode === 'signup' ? MIN_PASSWORD_LENGTH : undefined}
               maxLength={128}
