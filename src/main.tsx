@@ -2,13 +2,17 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { requestPersistentStorage } from './storage';
-import { registerSW } from 'virtual:pwa-register';
 import './styles.css';
 
 declare const __APP_VERSION__: string;
 
 requestPersistentStorage();
-registerSW({ immediate: true });
+
+/** Žádná offline cache aplikace: případný dříve uložený service worker a jeho cache odstraníme. */
+if ('serviceWorker' in navigator) {
+  void navigator.serviceWorker.getRegistrations().then((regs) => regs.forEach((r) => void r.unregister()));
+  if ('caches' in window) void caches.keys().then((keys) => keys.forEach((k) => void caches.delete(k)));
+}
 
 /**
  * Zařízení může mít uloženou starou verzi aplikace (service worker). Ta by s novou databází nemusela ukládat data,

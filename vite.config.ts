@@ -38,6 +38,9 @@ export default defineConfig(({ mode }) => ({
       // Android (Capacitor) a Windows (Electron) mají soubory v balíčku – service worker by jen držel staré verze.
       // Online náhled (mode demo) service worker nepodporuje.
       disable: mode === 'native' || mode === 'demo',
+      // Žádná offline cache: aplikace se vždy načte aktuální ze serveru. Service worker, který si zařízení
+      // uložilo dřív, se sám odregistruje a smaže svou cache (selfDestroying).
+      selfDestroying: true,
       registerType: 'autoUpdate',
       injectRegister: false,
       scope: '/app/',

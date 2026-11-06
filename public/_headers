@@ -7,6 +7,7 @@
   Cache-Control: no-store
 
 /
+  Cache-Control: no-cache
   Content-Security-Policy: default-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -14,6 +15,7 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 /soukromi.html
+  Cache-Control: no-cache
   Content-Security-Policy: default-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -21,6 +23,7 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 /obchodni-podminky.html
+  Cache-Control: no-cache
   Content-Security-Policy: default-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -34,4 +37,12 @@
   Strict-Transport-Security: max-age=63072000; includeSubDomains
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Cross-Origin-Opener-Policy: same-origin
+  Cache-Control: no-cache
+
+# Soubory bez otisku v názvu – vždy ověřit na serveru, ať je vzhled webu hned aktuální.
+/site.css
+  Cache-Control: no-cache
+/site.js
+  Cache-Control: no-cache
+/sw.js
   Cache-Control: no-cache
