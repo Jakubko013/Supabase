@@ -99,7 +99,7 @@ export function ClubView({ client, user, club, members, license, onChanged, reas
         <ul className="license-features">
           <li>Neomezený počet zápasů na 12 měsíců</li>
           <li>Až {club.seats} lidé z klubu sdílí zápasy a statistiky</li>
-          <li>Synchronizace mezi zařízeními, export PDF a CSV</li>
+          <li>Synchronizace mezi zařízeními, export a sdílení PDF a CSV</li>
         </ul>
 
         {isAdmin ? (

@@ -21,7 +21,8 @@ const isNative = !!window.Capacitor?.isNativePlatform?.();
 // Online náhled (mode demo) běží v sandboxu, který stahování ani sdílení nepovolí.
 const exportable = import.meta.env.MODE !== 'demo';
 
-export function StatsView({ match }: { match: Match }) {
+/** exportLocked: zkušební verze – statistiky jen v aplikaci, export a sdílení až s licencí. */
+export function StatsView({ match, exportLocked = false }: { match: Match; exportLocked?: boolean }) {
   const [set, setSet] = useState(0);
   const [copyState, setCopyState] = useState<'idle' | 'ok' | 'fail'>('idle');
   const [pdfState, setPdfState] = useState<'idle' | 'busy' | 'fail'>('idle');
@@ -66,6 +67,12 @@ export function StatsView({ match }: { match: Match }) {
           ‹ {match.finished ? 'Zápasy' : 'Zpět k záznamu'}
         </button>
         <div className="actions">
+          {exportLocked ? (
+            <a className="btn btn-primary" href="#/club">
+              Export PDF a CSV s licencí
+            </a>
+          ) : (
+            <>
           {exportable && canShare && (
             <button className="btn btn-primary" onClick={() => exportPdf('share')} disabled={pdfState === 'busy'}>
               {pdfState === 'busy' ? 'Připravuji PDF…' : 'Sdílet PDF'}
@@ -87,6 +94,8 @@ export function StatsView({ match }: { match: Match }) {
           <button className="btn" onClick={copy}>
             {copyState === 'ok' ? 'Zkopírováno ✓' : copyState === 'fail' ? 'Kopírování se nepodařilo' : 'Kopírovat tabulku'}
           </button>
+            </>
+          )}
         </div>
       </header>
 

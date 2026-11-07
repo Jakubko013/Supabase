@@ -224,7 +224,7 @@ Deno.serve(async (req) => {
         // Licence je pro stálé členy, ne pro neomezenou výměnu: nejvýše 2× počet míst pozvánek za licenční období.
         const invitesUsed = typeof club.invites_used === 'number' ? club.invites_used : 0;
         if (invitesUsed >= club.seats * 2) return json({ error: 'V tomto licenčním období už jste vyčerpali počet pozvánek. Napište nám na info@volleystat.cz.' }, 409);
-        const { data: invited, error } = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: SITE_URL });
+        const { data: invited, error } = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: SITE_URL, data: { invited: true } });
         if (error || !invited.user) {
           // Účet už existuje – do klubu ho nepřevádíme automaticky (mohl by mít vlastní zápasy).
           const exists = error?.status === 422 || /already/i.test(error?.message ?? '');

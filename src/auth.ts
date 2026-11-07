@@ -64,18 +64,26 @@ export function useAuth() {
   return { state, finishPassword };
 }
 
-export async function signIn(email: string, password: string): Promise<string | null> {
+const CAPTCHA_ERROR = 'Ověření, že nejste robot, se nepodařilo. Počkejte chvilku a zkuste to znovu.';
+const isCaptchaError = (e: { message: string; code?: string }) => /captcha/i.test(`${e.code ?? ''} ${e.message}`);
+
+export async function signIn(email: string, password: string, captchaToken?: string): Promise<string | null> {
   if (!supabase) return 'Aplikace není nakonfigurovaná.';
-  const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
-  return error ? (error.status === 429 ? 'Příliš mnoho pokusů. Zkuste to za chvíli.' : LOGIN_ERROR) : null;
+  const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password, options: { captchaToken } });
+  if (!error) return null;
+  if (isCaptchaError(error)) return CAPTCHA_ERROR;
+  return error.status === 429 ? 'Příliš mnoho pokusů. Zkuste to za chvíli.' : LOGIN_ERROR;
 }
 
 /** Registrace do zkušební verze; účet se aktivuje potvrzením e-mailu. Neprozradí, zda e-mail už existuje. */
-export async function signUp(email: string, password: string): Promise<string | null> {
+export async function signUp(email: string, password: string, captchaToken?: string): Promise<string | null> {
   if (!supabase) return 'Aplikace není nakonfigurovaná.';
-  const { error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: `${window.location.origin}/app/` } });
+  const { error } = await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: `${window.location.origin}/app/`, captchaToken } });
   if (!error) return null;
   const msg = `${error.code ?? ''} ${error.message}`;
+  if (isCaptchaError(error)) return CAPTCHA_ERROR;
+  // Česká hláška z kontroly registrace v databázi (jednorázový e-mail, alias, limit na síť) – zobrazit, jak je.
+  if (/Jednorázové e-mailové|Účet s touto e-mailovou|Z této sítě/.test(error.message)) return error.message;
   if (error.status === 429 || /rate.?limit/i.test(msg)) return 'Příliš mnoho pokusů nebo e-mailů. Zkuste to za chvíli.';
   if (/signup.?disabled|signups not allowed/i.test(msg)) return 'Registrace je momentálně vypnutá. Napište nám na info@volleystat.cz.';
   if (/sending.*email|smtp|confirmation email/i.test(msg)) return 'Nepodařilo se odeslat potvrzovací e-mail. Zkuste to prosím později.';
@@ -85,9 +93,10 @@ export async function signUp(email: string, password: string): Promise<string | 
   return `Účet se nepodařilo vytvořit (${error.code ?? error.status ?? 'chyba'}). Zkuste to znovu.`;
 }
 
-export async function requestReset(email: string): Promise<void> {
-  // Výsledek se záměrně ignoruje – odpověď uživateli je vždy stejná.
-  await supabase?.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/app/` });
+/** Výsledek se záměrně neprozrazuje (vždy stejná odpověď) – kromě selhání ochrany proti robotům. */
+export async function requestReset(email: string, captchaToken?: string): Promise<string | null> {
+  const res = await supabase?.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/app/`, captchaToken });
+  return res?.error && isCaptchaError(res.error) ? CAPTCHA_ERROR : null;
 }
 
 export async function setPassword(password: string): Promise<{ user?: User; error?: string }> {

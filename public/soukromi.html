@@ -56,6 +56,12 @@
               <td>Dokud zápas nebo účet nesmažete</td>
             </tr>
             <tr>
+              <td><strong>Ochrana registrace</strong> – IP adresa a čas registrace, výsledek ověření, že nejste robot</td>
+              <td>Zabránit hromadnému a opakovanému zakládání účtů</td>
+              <td>Oprávněný zájem (čl. 6 odst. 1 písm. f GDPR)</td>
+              <td>30 dní</td>
+            </tr>
+            <tr>
               <td><strong>Technické záznamy</strong> – IP adresa a čas požadavku u poskytovatelů hostingu</td>
               <td>Zabezpečení a provoz služby</td>
               <td>Oprávněný zájem (čl. 6 odst. 1 písm. f GDPR)</td>
@@ -79,11 +85,12 @@
         <li><strong>Netlify</strong> – provoz webu a příjem formuláře žádosti o pozvánku.</li>
         <li><strong>Resend</strong> – odesílání e-mailů (potvrzení registrace, pozvánky, obnovení hesla).</li>
         <li><strong>Stripe</strong> – platby kartou, vystavování faktur a správa předplatného.</li>
+        <li><strong>Cloudflare (Turnstile)</strong> – ověření, že formulář vyplňuje člověk, ne robot.</li>
         <li><strong>Active24</strong> – správa domény volleystat.cz.</li>
         <li><strong>ImprovMX</strong> – přeposílání e-mailů z adresy info@volleystat.cz.</li>
       </ul>
       <p>
-        Netlify, Resend, Stripe a ImprovMX jsou společnosti se sídlem v USA (Stripe zpracovává platby v EU přes Stripe Payments Europe, Irsko). Předání údajů probíhá na základě rámce EU–USA pro ochranu osobních údajů (Data
+        Netlify, Resend, Stripe, ImprovMX a Cloudflare jsou společnosti se sídlem v USA (Stripe zpracovává platby v EU přes Stripe Payments Europe, Irsko). Předání údajů probíhá na základě rámce EU–USA pro ochranu osobních údajů (Data
         Privacy Framework), případně standardních smluvních doložek Evropské komise.
       </p>
       <p>

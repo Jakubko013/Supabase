@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { requestReset, setPassword, signIn, signUp } from '../auth';
 import { TRIAL_MATCHES } from '../club';
+import { Turnstile, TURNSTILE_SITE_KEY } from '../components/Turnstile';
 import { isPwned, MIN_PASSWORD_LENGTH, passwordProblem } from '../password';
 import type { User } from '@supabase/supabase-js';
 
@@ -62,6 +63,8 @@ export function Login({ notice }: { notice?: string }) {
   const [email, setEmail] = useState('');
   const [password, setPw] = useState('');
   const [password2, setPw2] = useState('');
+  const [captcha, setCaptcha] = useState<string | null>(null);
+  const [captchaReset, setCaptchaReset] = useState(0);
   // Prohlížeč pole po načtení sám nevyplní: jsou jen pro čtení, dokud se jich uživatel nedotkne (po odhlášení prázdný formulář).
   const [locked, setLocked] = useState(true);
   const unlock = { readOnly: locked, onPointerDown: () => setLocked(false), onFocus: () => setLocked(false) };
@@ -81,20 +84,24 @@ export function Login({ notice }: { notice?: string }) {
       const problem = passwordProblem(password, email) ?? (password !== password2 ? 'Hesla se neshodují.' : null);
       if (problem) return setError(problem);
     }
+    if (TURNSTILE_SITE_KEY && !captcha) return setError('Ještě chvilku – ověřujeme, že nejste robot. Zkuste to za pár sekund znovu.');
+    const token = captcha ?? undefined;
     setBusy(true);
-    if (mode === 'login') setError(await signIn(email, password));
+    if (mode === 'login') setError(await signIn(email, password, token));
     else if (mode === 'signup') {
       if (await isPwned(password)) setError('Toto heslo se objevilo v uniklých databázích. Zvolte jiné.');
       else {
-        const err = await signUp(email, password);
+        const err = await signUp(email, password, token);
         if (err) setError(err);
         else setMode('signedUp');
       }
     } else {
-      await requestReset(email);
-      setMode('sent');
+      const err = await requestReset(email, token);
+      if (err) setError(err);
+      else setMode('sent');
     }
     setBusy(false);
+    setCaptchaReset((n) => n + 1); // token je jednorázový
   }
 
   if (mode === 'sent' || mode === 'signedUp')
@@ -120,7 +127,7 @@ export function Login({ notice }: { notice?: string }) {
           </p>
         )}
         {mode === 'signup' && (
-          <p className="muted">Vyzkoušejte zápis {TRIAL_MATCHES} zápasů zdarma, bez platební karty. Licenci pro klub koupíte až v aplikaci.</p>
+          <p className="muted">Vyzkoušejte zápis {TRIAL_MATCHES} zápasů zdarma, bez platební karty (export PDF a CSV je součástí licence). Licenci pro klub koupíte až v aplikaci.</p>
         )}
         <label className="field">
           <span>E-mail</span>
@@ -148,6 +155,7 @@ export function Login({ notice }: { notice?: string }) {
             <input type="password" name="password2" autoComplete="new-password" required maxLength={128} value={password2} onChange={(e) => setPw2(e.target.value)} />
           </label>
         )}
+        <Turnstile onToken={setCaptcha} resetKey={captchaReset} />
         {error && (
           <p className="banner banner-bad" role="alert">
             {error}

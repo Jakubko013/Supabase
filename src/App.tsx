@@ -195,7 +195,7 @@ function Main({ user }: { user: User | null }) {
     );
   } else if (screen === 'match' && match) {
     content =
-      sub === 'stats' || match.finished || !writable ? <StatsView match={match} /> : <Recording match={match} updateMatch={updateMatch} otherEditor={!!user && editedByOther(remoteMeta.get(match.id), user.id)} />;
+      sub === 'stats' || match.finished || !writable ? <StatsView match={match} exportLocked={license?.kind === 'trial'} /> : <Recording match={match} updateMatch={updateMatch} otherEditor={!!user && editedByOther(remoteMeta.get(match.id), user.id)} />;
   } else {
     content = (
       <Home matches={matches} license={license} onDelete={(mid) => apply((list) => list.filter((m) => m.id !== mid))} onImport={(list) => apply(() => list)} />

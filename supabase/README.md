@@ -31,3 +31,11 @@ Licenci ručně (např. pro sebe): `update clubs set license_until = now() + int
 
 ## Migrace 0003 (audit)
 `migrations/0003_audit.sql`: `matches.updated_by` (varování při souběžném zápisu více členů) a `clubs.invites_used` (nejvýše 2× počet míst pozvánek za licenční období). Aplikace i funkce fungují i bez ní, ale bez ní tyto ochrany neplatí.
+
+## Ochrana proti opakovanému zakládání účtů
+1. **SQL Editor → `migrations/0004_signup_guard.sql`** (jednorázové e-maily, aliasy Gmailu, max. 3 účty z jedné IP za 30 dní; pozvaní členové se nepočítají).
+2. **Authentication → Auth Hooks → Before User Created → Postgres function `public.hook_before_user_created`** → zapnout.
+3. **Cloudflare Turnstile** (zdarma): dash.cloudflare.com → Turnstile → Add widget, doména `volleystat.cz`, režim Managed.
+   - **Site key** → Netlify env `VITE_TURNSTILE_SITE_KEY` → nové nasazení webu.
+   - **Secret key** → Supabase → Authentication → Attack Protection → Enable CAPTCHA protection → Turnstile → Save.
+   - Pořadí: nejdřív nasadit web se site key, teprve pak zapnout CAPTCHA v Supabase (jinak nepůjde přihlášení).

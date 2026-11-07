@@ -1159,3 +1159,4 @@ label.btn:focus-within {
 .invite-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem; width: 100%; }
 .invite-row .field { flex: 1 1 16rem; }
 a.btn { display: inline-flex; align-items: center; text-decoration: none; }
+.turnstile { min-height: 0; margin: 0.25rem 0; }
