@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /cvf/
+
+Sitemap: https://volleystat.cz/sitemap.xml
