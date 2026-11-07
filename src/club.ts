@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 /** Zkušební verze: kolik zápasů smí klub bez licence založit (stejné číslo hlídá databáze). */
 export const TRIAL_MATCHES = 2;
 export const LICENSE_PRICE = '4 000 Kč';
+export const LICENSE_PRICE_CZK = 4000;
 export const LICENSE_SEATS = 3;
 
 export interface Club {

@@ -13,8 +13,9 @@ import { useAuth } from './auth';
 import { supabase } from './supabase';
 import { createSync, diffMatches, type RemoteMeta, type Sync, type SyncStatus } from './sync';
 import { isValidMatchId, mergeMatches } from './backup';
-import { canCreateMatch, canWrite, licenseOf, loadClub, type Club, type ClubMember, type License } from './club';
+import { LICENSE_PRICE_CZK, canCreateMatch, canWrite, licenseOf, loadClub, type Club, type ClubMember, type License } from './club';
 import { ClubView } from './screens/ClubView';
+import { track } from './track';
 
 export type MatchUpdater = (id: string, update: (m: Match) => Match) => void;
 
@@ -108,7 +109,10 @@ function Main({ user }: { user: User | null }) {
     let tries = 0;
     const timer = setInterval(async () => {
       const club = await refreshClub();
-      if (++tries >= 15 || (club && licenseOf(club).kind === 'active')) clearInterval(timer);
+      if (club && licenseOf(club).kind === 'active') {
+        clearInterval(timer);
+        track('purchase', { value: LICENSE_PRICE_CZK, currency: 'CZK', transaction_id: `${club.id}-${club.licenseUntil?.toISOString().slice(0, 10)}` });
+      } else if (++tries >= 15) clearInterval(timer);
     }, 2000);
     return () => clearInterval(timer);
   }, [refreshClub]);

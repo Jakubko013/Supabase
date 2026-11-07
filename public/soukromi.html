@@ -9,6 +9,7 @@
     <link rel="canonical" href="https://volleystat.cz/soukromi.html" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/site.css" />
+    <script src="/consent.js" defer></script>
   </head>
   <body>
     <header class="top top-simple">
@@ -20,8 +21,8 @@
       <p class="kicker dark">Právní informace</p>
       <h1>Ochrana osobních údajů</h1>
       <p class="legal-lead">
-        Údaje zpracováváme jen v rozsahu, který aplikace nutně potřebuje. Nepoužíváme reklamu, analytiku ani sledovací cookies a údaje
-        neprodáváme.
+        Údaje zpracováváme jen v rozsahu, který aplikace nutně potřebuje. Reklamní cookies Google Ads používáme jen s vaším souhlasem,
+        analytiku ani personalizovanou reklamu nepoužíváme a údaje neprodáváme.
       </p>
 
       <h2>1. Kdo údaje zpracovává</h2>
@@ -62,6 +63,12 @@
               <td>30 dní</td>
             </tr>
             <tr>
+              <td><strong>Měření reklamy</strong> – identifikátor kliknutí na reklamu, cookies Google Ads, údaj o registraci nebo nákupu licence (bez e-mailu a jména)</td>
+              <td>Zjistit, které reklamy vedou k registraci a nákupu</td>
+              <td>Souhlas (čl. 6 odst. 1 písm. a GDPR a § 89 odst. 3 zákona o elektronických komunikacích)</td>
+              <td>Do odvolání souhlasu, cookies nejvýše 90 dní</td>
+            </tr>
+            <tr>
               <td><strong>Technické záznamy</strong> – IP adresa a čas požadavku u poskytovatelů hostingu</td>
               <td>Zabezpečení a provoz služby</td>
               <td>Oprávněný zájem (čl. 6 odst. 1 písm. f GDPR)</td>
@@ -86,11 +93,12 @@
         <li><strong>Resend</strong> – odesílání e-mailů (potvrzení registrace, pozvánky, obnovení hesla).</li>
         <li><strong>Stripe</strong> – platby kartou, vystavování faktur a správa předplatného.</li>
         <li><strong>Cloudflare (Turnstile)</strong> – ověření, že formulář vyplňuje člověk, ne robot.</li>
+        <li><strong>Google (Google Ads)</strong> – měření úspěšnosti reklam, jen pokud s ním souhlasíte; Google Ireland Limited, Irsko.</li>
         <li><strong>Active24</strong> – správa domény volleystat.cz.</li>
         <li><strong>ImprovMX</strong> – přeposílání e-mailů z adresy info@volleystat.cz.</li>
       </ul>
       <p>
-        Netlify, Resend, Stripe, ImprovMX a Cloudflare jsou společnosti se sídlem v USA (Stripe zpracovává platby v EU přes Stripe Payments Europe, Irsko). Předání údajů probíhá na základě rámce EU–USA pro ochranu osobních údajů (Data
+        Netlify, Resend, Stripe, ImprovMX, Cloudflare a Google jsou společnosti se sídlem v USA (Stripe zpracovává platby v EU přes Stripe Payments Europe, Irsko). Předání údajů probíhá na základě rámce EU–USA pro ochranu osobních údajů (Data
         Privacy Framework), případně standardních smluvních doložek Evropské komise.
       </p>
       <p>
@@ -98,11 +106,15 @@
         nikdy heslo ani e-mail. Soupisky z cvf.cz se načítají přes náš web a žádné vaše údaje se na cvf.cz neposílají.
       </p>
 
-      <h2>5. Cookies a úložiště v zařízení</h2>
+      <h2 id="cookies">5. Cookies a úložiště v zařízení</h2>
       <p>
-        Nepoužíváme reklamní ani analytické cookies. Aplikace si do úložiště vašeho prohlížeče ukládá jen to, co nutně potřebuje: přihlášení a
-        zápasy pro práci bez internetu. Po odhlášení se tato data ze zařízení smažou. Protože jde o nezbytné úložiště, souhlas k němu není
-        potřeba.
+        Aplikace si do úložiště vašeho prohlížeče ukládá to, co nutně potřebuje: přihlášení, zápasy pro práci bez internetu a vaši volbu
+        k cookies. Po odhlášení se přihlášení a zápasy ze zařízení smažou. K nezbytnému úložišti souhlas potřeba není.
+      </p>
+      <p>
+        <strong>Reklamní cookies Google Ads</strong> se načtou jen tehdy, když je v liště přijmete. Slouží k tomu, abychom věděli, zda
+        návštěvník přišel z naší reklamy a zaregistroval se nebo koupil licenci. Personalizovanou reklamu ani analytiku nepoužíváme. Souhlas
+        můžete kdykoli odvolat odkazem <button type="button" class="foot-btn" data-consent-open>Nastavení cookies</button> v patičce webu.
       </p>
 
       <h2>6. Zabezpečení</h2>
@@ -121,12 +133,12 @@
       </ul>
       <p>Žádost pošlete na <a href="mailto:info@volleystat.cz">info@volleystat.cz</a>. Vyřídíme ji bez zbytečného odkladu, nejpozději do jednoho měsíce.</p>
 
-      <p class="legal-date">Platné od 6. 11. 2026. Podmínky používání služby najdete v <a href="/obchodni-podminky.html">obchodních podmínkách</a>.</p>
+      <p class="legal-date">Platné od 7. 11. 2026. Podmínky používání služby najdete v <a href="/obchodni-podminky.html">obchodních podmínkách</a>.</p>
     </main>
 
     <footer class="foot">
       <span>© 2026 VolleyStat</span>
-      <a href="/">Zpět na web</a>
+      <span class="foot-links"><button type="button" class="foot-btn" data-consent-open>Nastavení cookies</button><a href="/">Zpět na web</a></span>
     </footer>
   </body>
 </html>

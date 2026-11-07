@@ -1,0 +1,33 @@
+.consent {
+  position: fixed;
+  z-index: 1000;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  background: #0a1a3f;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #e6ebf7;
+  font: 400 0.95rem/1.45 system-ui, -apple-system, 'Segoe UI', sans-serif;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+.consent p { margin: 0 0 0.85rem; }
+.consent a { color: #ffd23f; }
+.consent-actions { display: flex; gap: 0.6rem; justify-content: flex-end; flex-wrap: wrap; }
+.consent button {
+  min-height: 44px;
+  padding: 0 1.2rem;
+  border: 2px solid #ffd23f;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  font: 700 0.95rem/1 inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+.consent button[data-v='granted'] { background: #ffd23f; color: #0a1a3f; }
+.consent button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.foot-btn { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }

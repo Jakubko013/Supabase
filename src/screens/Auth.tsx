@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { requestReset, setPassword, signIn, signUp } from '../auth';
 import { TRIAL_MATCHES } from '../club';
 import { Turnstile, TURNSTILE_SITE_KEY } from '../components/Turnstile';
+import { track } from '../track';
 import { isPwned, MIN_PASSWORD_LENGTH, passwordProblem } from '../password';
 import type { User } from '@supabase/supabase-js';
 
@@ -93,7 +94,10 @@ export function Login({ notice }: { notice?: string }) {
       else {
         const err = await signUp(email, password, token);
         if (err) setError(err);
-        else setMode('signedUp');
+        else {
+          track('sign_up', { method: 'email' });
+          setMode('signedUp');
+        }
       }
     } else {
       const err = await requestReset(email, token);
