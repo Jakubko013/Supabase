@@ -119,7 +119,7 @@ function LicenseBanner({ license }: { license: License }) {
   return (
     <p className="banner license-banner" role="status">
       Zkušební verze: {license.left > 0 ? `zbývá ${license.left} z ${TRIAL_MATCHES} zápasů zdarma.` : `využili jste ${TRIAL_MATCHES} zápasy zdarma.`}{' '}
-      <a href="#/club">Licence pro klub {LICENSE_PRICE} / sezóna</a>
+      <a href="#/club">Licence pro klub {LICENSE_PRICE} / 12 měsíců</a>
     </p>
   );
 }
